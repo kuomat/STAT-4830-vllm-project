@@ -1,7 +1,21 @@
+## Strengths
+- Clear optimization statement and success metrics defined for a relatively open-ended problem
+- Thorough discussion of possible limitations and challenges, including consideration of both user-facing (data privacy), efficiency (latency), algorithmic (metadata mismatch), and conceptual (cold-start with 0 history on other sites) issues.
+
 ## Weaknesses
+- Resource Requirements: We need GPUs beyond Google Colab's free-tier but can't specify the exact GPU types or hours required until we finalize the model size and data.
+- Scalability and Latency: Scalability and latency are crucial, but we haven't addressed how the model will scale or minimize latency yet, as this depends on the finalized data.
 
-### Resource Requirements Could Be More Specific
-For this part, we mentioned that we need GPUs beyond the free-tier GPUs that Google Colab provides, but we could have dug deeper into whether we need specific GPUs and how many GPU hours we will need to complete the project. However, at this point in time, we don’t have an idea of how large our model is going to be and are in the process of collecting more data points, so we are unable to give a specific number in terms of how many GPU hours we will need and what types of GPUs we require.
+## Critical Risks/Assumptions:
+- Assuming the dataset will fit in memory but we need to test this once we finalize our dataset.
+- Assuming that we will be able to solve this problem with GraphSAGE but we might need to find bigger models.
 
-### Scalability and Latency Considerations 
-Since we are building a machine learning model, we will need a lot of data, and therefore scalability and latency will be very important. In this report, we didn’t really address how the model will scale as the graph grows or how latency will be minimized when generating recommendations, as we still need to look more into this after we finalize our data.
+## Concrete Next Actions
+- Create and find usable datasets to train our recommendation system
+  - Find a comprehensive collection of images (starting with clothing items)
+  - Look for existing datasets of images
+- Research and explore more clustering algorithms that better suit this problem
+
+## Resource Needs
+- Need to learn how the GraphSAGE model works conceptually and how to implement it in our web extension context. Will browse the GraphSAGE PyTorch docs in detail and follow online tutorial notebooks.
+- Need to learn about the best ways to embed our graph model so we can get results that are as accurate as possible.
