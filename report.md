@@ -31,9 +31,7 @@ Cold-start issues in recommendation systems lead to poor user experience, making
 
 The objective function optimizes a ranking loss for cold-start users/items:
 
-$
-\max_{\theta} \sum_{u \in U_{cs}} \sum_{i \in I} y_{ui} \log (\sigma(f(u, i))) + (1 - y_{ui}) \log (1 - \sigma(f(u, i)))
-$
+$\max_{\theta} \sum_{u \in U_{cs}} \sum_{i \in I} y_{ui} \log (\sigma(f(u, i))) + (1 - y_{ui}) \log (1 - \sigma(f(u, i)))$
 
 where:  
 
