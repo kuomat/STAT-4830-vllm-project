@@ -61,6 +61,117 @@ where:
 ### Resource requirements and constraints
 - Since we are fine-tuning the embeddings as well as running machine learning models to generate our predictions, we will probably need GPUs beyond the free-tier provided by Google Colab
 
+## Initial Results  
+
+### CLIP Embeddings for Unsupervised Clothing Image Clustering  
+
+To test the feasibility of using CLIP embeddings for unsupervised clothing image clustering, I conducted two separate experiments using different datasets.  
+
+- **Dataset 1:** A small collection of **76 images** obtained from shopping websites, featuring various types of clothing, including pants, t-shirts, blouses, and hoodies. Some images contained models wearing the clothes, while others displayed the garments alone.  
+- **Dataset 2:** A subset of **1,000 images** from the **Fashion-MNIST dataset**, used to assess the model's performance on a larger but still manageable dataset.  
+
+For clustering, I initially attempted **DBSCAN** using both Euclidean distance and cosine similarity. However, DBSCAN failed to form any clusters in both datasets, likely due to the high dimensionality and sparse nature of the embedding space.  
+
+I then switched to **HDBSCAN**, which is better suited for variable density data:  
+- **Custom shopping dataset**: Resulted in **three clusters**.  
+- **Fashion-MNIST dataset**: Produced **33 clusters**.  
+
+Given the relatively small dataset sizes, the code executed in under a minute, consuming less than 10% of the CPU.  
+
+---
+
+## Evidence Your Implementation Works  
+
+- Successfully **extracted CLIP embeddings** for all images.  
+- Applied **clustering algorithms** to organize similar clothing items.  
+- HDBSCAN produced meaningful groupings:  
+  - In the **custom dataset**, three clusters predominantly grouped **sweaters, sweatpants, and dresses/skirts**.  
+  - In **Fashion-MNIST**, 33 clusters were identified, many correctly grouping similar clothing items.  
+- However, there were **many outliers**, particularly among **patterned clothing**, suggesting the model struggles with learning fabric textures.  
+
+---
+
+## Basic Performance Metrics  
+
+Performance varied between the two datasets:  
+
+- **Custom Shopping Dataset (76 images)**  
+  - Ran in under **one minute**, using less than **5% CPU**.  
+  - HDBSCAN identified **three clusters**, successfully distinguishing between broad categories of clothing.  
+  - **Struggled with patterned items.**  
+
+- **Fashion-MNIST Dataset (1,000 images)**  
+  - Completed in a **few minutes**, maintaining minimal CPU usage.  
+  - HDBSCAN produced **33 clusters**, showing a more refined grouping of clothing items.  
+  - Some clusters mixed different clothing types, but overall, the larger dataset improved clustering performance.  
+
+---
+
+## Test Case Results  
+
+- **DBSCAN (Euclidean & Cosine Similarity)**: Failed to generate meaningful clusters in both datasets.  
+- **HDBSCAN (Custom Dataset)**:  
+  - Formed **three distinct clusters**: **sweaters, sweatpants, and dresses/skirts**.  
+- **HDBSCAN (Fashion-MNIST Dataset)**:  
+  - Formed **33 clusters**, many accurately grouping similar clothing items.  
+  - Some clusters contained **mixed clothing types**.  
+  - **Outliers remained an issue**, especially for patterned garments.  
+
+These results suggest that **CLIP embeddings are useful for capturing high-level visual similarities**, but may struggle with **fine-grained details such as fabric textures and small design variations**.  
+
+---
+
+## Current Limitations  
+
+1. **Presence of outliers**, particularly among patterned clothing.  
+2. **Lack of texture understanding**: CLIP may not fully capture fabric material similarities.  
+3. **Small dataset size**:  
+   - DBSCAN may require more samples to form meaningful clusters.  
+   - Small sample size could contribute to suboptimal clustering results.  
+4. **High number of clusters in Fashion-MNIST**:  
+   - Some clusters contained **mixed clothing categories**.  
+   - Hyperparameters such as `min_samples` and `cluster_selection_epsilon` may need fine-tuning.  
+
+---
+
+## Resource Usage Measurements  
+
+- **Custom Shopping Dataset (76 images)**:  
+  - **Executed in under a minute**.  
+  - **Used less than 5% CPU**.  
+  - Minimal resource demand due to small dataset size.  
+
+- **Fashion-MNIST Dataset (1,000 images)**:  
+  - **Completed in a few minutes**.  
+  - **Minimal CPU usage**.  
+  - Could benefit from **GPU acceleration** for larger datasets.  
+
+At this stage, **memory consumption and processing time have not posed significant challenges**.  
+
+---
+
+## Unexpected Challenges  
+
+- **DBSCAN Failure:**  
+  - Did not cluster the data, even with cosine similarity.  
+  - Likely due to the **sparse distribution of high-dimensional feature vectors** from CLIP embeddings.  
+
+- **Significant number of outliers**:  
+  - Especially among **patterned clothing**, suggesting that CLIP embeddings may not capture texture well.  
+
+- **Higher-than-expected cluster count in Fashion-MNIST**:  
+  - Some clusters mixed different types of clothing.  
+  - Clustering parameters need further **refinement and hyperparameter tuning**.  
+
+---
+
+## Future Work  
+
+- **Optimize clustering parameters** to improve grouping accuracy.  
+- **Experiment with additional datasets**, particularly fashion-specific datasets.  
+- **Explore fine-tuning CLIP embeddings** or incorporating additional **texture-sensitive feature extraction techniques**.  
+- **Test GPU acceleration** for larger datasets to reduce execution time.  
+- **Investigate hybrid approaches**: Combine CLIP embeddings with other visual features (e.g., handcrafted texture features) for better clustering performance.  
 
 ## Next Steps
 ### Immediate Improvements Needed
