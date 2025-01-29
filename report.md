@@ -22,4 +22,27 @@ Cold-start issues in recommendation systems lead to poor user experience, making
 - **Sparse shopping history from other sites**: Recommendations may be weak.  
 - **Metadata Mismatch**: Makes standardization potentially difficult.  
 - **Scale**: Large product graphs may introduce latency in recommendations.  
-- **Privacy Concerns**: Tracking user activity across websites must comply with data protection regulations.  
+- **Privacy Concerns**: Tracking user activity across websites must comply with data protection regulations.
+
+
+## Technical Approach (1/2 page)
+### Mathematical formulation (objective function, constraints)
+
+
+### Algorithm/approach choice and justification
+- One of the libraries we will be using is PyTorch Geometric (PyG) which is for GraphSAGE-based embedding learning
+- A specific use case of the PyG library is that it provides a neighbor sampling method which handles large graphs like the graph we will be using for this project extremely well.
+
+
+### PyTorch implementation strategy
+- A PyTorch library that is going to be helpful for this project is the Transformers library maintained by Hugging Face. This library not only lets us extract embeddings from images or texts, but we can also obtain some pre-trained models here.
+- Our initial plan is to scrape data from different e-commerce sites, clean the metadata, and store the structured graph format in PyTorch as tensors.
+
+
+### Validation methods
+- We will split our data into training, validation, and testing sets and will be validating our model and algorithm on the validation set to simulate cold-start conditions
+- To tune hyperparameters better, and to get a more reliable performance estimation, we will be using the k-Fold Cross-Validation technique where we are setting k to 5 for now.
+
+
+### Resource requirements and constraints
+- Since we are fine-tuning the embeddings as well as running machine learning models to generate our predictions, we will probably need GPUs beyond the free-tier provided by Google Colab
