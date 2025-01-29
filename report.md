@@ -60,3 +60,29 @@ where:
 
 ### Resource requirements and constraints
 - Since we are fine-tuning the embeddings as well as running machine learning models to generate our predictions, we will probably need GPUs beyond the free-tier provided by Google Colab
+
+
+## Next Steps
+### Immediate Improvements Needed
+- Refine Clustering Techniques: Adjust hyperparameters (e.g., DBSCAN vs. k-means) and apply advanced metrics to validate cluster quality.
+- Enhance Image Preprocessing: Standardize image formats, normalize lighting/angles, and use domain-specific augmentations (e.g., garment features).
+- Incorporate Textual Metadata: Integrate product titles, descriptions, and brand data for more robust feature representation.
+
+### Technical Challenges to Address
+- Data Heterogeneity: Standardizing metadata formats across multiple e-commerce platforms.
+- Scalability: Managing millions of items efficiently across various sites.
+- Real-Time Performance: Ensuring low-latency recommendations for browser-based inference.
+
+### Questions You Need Help With
+- Model Selection: Which embeddings or pretrained networks (e.g., CLIP, ViT) best handle diverse clothing styles?
+- Privacy & Compliance: How can we align cross-site data collection with evolving privacy regulations and consent?
+- Metadata Integration: Best practices to scrape and incorporate textual product data without site-related restrictions.
+
+### Alternative Approaches to Try
+- Hybrid Models: Combine text and image embeddings to capture richer, context-aware representations.
+- Active Learning: Involve human-in-the-loop labeling to refine clusters and continually improve accuracy.
+- Reinforcement Learning: Create adaptive recommendation systems that learn dynamically from user interactions.
+
+### What You've Learned So Far
+- Clustering & Image Embeddings: Grouping by visual similarity shows promise but requires careful preprocessing.
+- Training Data: Inconsistent or insufficient data hinders cluster quality, highlighting the need for more robust pipelines.
