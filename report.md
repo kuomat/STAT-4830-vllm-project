@@ -35,13 +35,13 @@ $\max_{\theta} \sum_{u \in U_{cs}} \sum_{i \in I} y_{ui} \log (\sigma(f(u, i))) 
 
 where:  
 
-$
-- \( U_{cs} \) = cold-start users  
-- \( I \) = items  
-- \( y_{ui} \) = binary indicator if user \( u \) engaged with item \( i \)  
-- \( f(u, i) \) = GraphSAGE-based scoring function  
-- \( \sigma \) = sigmoid function  
-$
+
+- $\( U_{cs} \)$ = cold-start users  
+- $\( I \)$ = items  
+- $\( y_{ui} \)$ = binary indicator if user $\( u \)$ engaged with item $\( i \)$  
+- $\( f(u, i) \)$ = GraphSAGE-based scoring function  
+- $\( \sigma \)$ = sigmoid function  
+
 
 ### Algorithm/approach choice and justification
 - One of the libraries we will be using is PyTorch Geometric (PyG) which is for GraphSAGE-based embedding learning
