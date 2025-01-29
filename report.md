@@ -1,6 +1,7 @@
 ## Problem Statement  
 
-We aim to optimize personalized recommendations for users when they visit a new e-commerce website where they have minimal prior purchase history.  
+We aim to optimize personalized recommendations for users when they visit a new e-commerce website where they have minimal prior purchase history. Our approach leverages metadata (e.g., product images, reviews, descriptions) from other shopping platforms the user has interacted with to generate relevant recommendations. We integrate this metadata into a graph-based model (GraphSAGE) to improve cold-start recommendation quality.
+
 Cold-start issues in recommendation systems lead to poor user experience, making it difficult for users to receive relevant suggestions when they switch to a new platform. This can cause frustration, reduce engagement, and limit conversions for businesses.  
 
 ### Success Metrics  
