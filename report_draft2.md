@@ -29,26 +29,25 @@ Cold-start issues in recommendation systems lead to poor user experience, making
 ### Collaborative Filtering
 
 ### Content-Based Filtering
-# Content Filtering for Cold-Start Recommendation Optimization
 
-## Mathematical Formulation
-### Objective Function:
+#### Mathematical Formulation
+##### Objective Function:
 Our objective is to recommend items that maximize the similarity between user preferences and item features, represented by text and image embeddings:
 
-\[ \max_{i \in \mathcal{I}} \text{cosine\_similarity}(\mathbf{u}, \mathbf{x}_i) \]
+$\max_{i \in \mathcal{I}} \text{cosine\_similarity}(\mathbf{u}, \mathbf{x}_i)$
 
 Where:
-- \( \mathbf{u} = \frac{1}{|\mathcal{L}|} \sum_{l \in \mathcal{L}} \mathbf{x}_l \) is the user preference vector (mean of liked item embeddings).
-- \( \mathbf{x}_i \) is the feature vector for item \(i\).
-- \( \text{cosine\_similarity}(\mathbf{u}, \mathbf{x}_i) = \frac{\mathbf{u} \cdot \mathbf{x}_i}{\|\mathbf{u}\| \|\mathbf{x}_i\|} \)
+- $\mathbf{u} = \frac{1}{|\mathcal{L}|} \sum_{l \in \mathcal{L}} \mathbf{x}_l$ is the user preference vector (mean of liked item embeddings).
+- $\mathbf{x}_i \) is the feature vector for item$.
+- $\text{cosine\_similarity}(\mathbf{u}, \mathbf{x}_i) = \frac{\mathbf{u} \cdot \mathbf{x}_i}{\|\mathbf{u}\| \|\mathbf{x}_i\|}$
 
-### Constraints:
+##### Constraints:
 1. **Cold-Start Handling:** Users have no historical ratings, so only item content embeddings (text, image) are used.
 2. **Diversity Constraint:** Optional constraint to limit similar items in recommendations.
 3. **Resource Constraint:** Limited memory and computational resources.
 
-## Algorithm/Approach Choice and Justification
-### Approach: Content-Based Filtering with CLIP Embeddings
+#### Algorithm/Approach Choice and Justification
+##### Approach: Content-Based Filtering with CLIP Embeddings
 We use CLIP (Contrastive Language-Image Pretraining) to encode both item text descriptions and images into a shared feature space. By relying on item content rather than user interaction history, we address the cold-start problem effectively.
 
 **Justification:**
@@ -56,53 +55,53 @@ We use CLIP (Contrastive Language-Image Pretraining) to encode both item text de
 - **No User History Required:** Suitable for cold-start scenarios.
 - **Efficient Similarity Computation:** Cosine similarity is fast and efficient.
 
-## PyTorch Implementation Strategy
-### 1. **Model and Preprocessing**:
+#### PyTorch Implementation Strategy
+1. **Model and Preprocessing**:
 - Use a pre-trained CLIP model from `openai/clip`.
 - Tokenize item descriptions and preprocess images for model input.
 
-### 2. **Embedding Extraction:**
+2. **Embedding Extraction:**
 - **Text Embeddings:** `model.encode_text()` with tokenized text.
 - **Image Embeddings:** `model.encode_image()` with preprocessed images.
 
-### 3. **Vector Combination:**
+3. **Vector Combination:**
 - Concatenate image and text embeddings into a single vector for each item.
 
-### 4. **Similarity Computation:**
+4. **Similarity Computation:**
 - Compute cosine similarity between user preference vectors and all item vectors using `cosine_similarity()` from `sklearn`.
 
-### 5. **Recommendation:**
+5. **Recommendation:**
 - Rank items by similarity scores.
 - Exclude items the user has already interacted with.
 
-## Validation Methods
-### 1. **Offline Evaluation:**
+#### Validation Methods
+1. **Offline Evaluation:**
 - **Metrics:** Precision, Recall, F1-score, Mean Average Precision (MAP), and NDCG.
 - **Cross-validation:** Use k-fold cross-validation on synthetic preference sets.
 
-### 2. **Cold-Start Scenario Testing:**
+2. **Cold-Start Scenario Testing:**
 - Test with users having no prior interactions.
 - Measure performance for different user personas (e.g., Vivian vs. Megan).
 
-### 3. **Qualitative Evaluation:**
+3. **Qualitative Evaluation:**
 - Visual inspection of recommendations.
 - User feedback sessions.
 
-## Resource Requirements and Constraints
-### 1. **Hardware:**
+#### Resource Requirements and Constraints
+1. **Hardware:**
 - **GPU:** Required for efficient PyTorch and CLIP model inference.
 - **Memory:** Minimum 16GB RAM for large embeddings.
 
-### 2. **Software:**
+2. **Software:**
 - Python 3.10+
 - PyTorch with CUDA support
 - `openai/clip`, `pandas`, `numpy`, `sklearn`
 
-### 3. **Time Constraints:**
+3. **Time Constraints:**
 - Embedding extraction may be slow for large datasets (batch processing recommended).
 - Recommendation retrieval is fast (O(N) with N items).
 
-### 4. **Scalability Constraints:**
+4. **Scalability Constraints:**
 - Limited by GPU memory for large batches.
 - Possible optimization: Approximate Nearest Neighbors (ANN) for large-scale search.
 
