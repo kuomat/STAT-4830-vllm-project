@@ -34,7 +34,7 @@ Cold-start issues in recommendation systems lead to poor user experience, making
 ##### Objective Function:
 Our objective is to recommend items that maximize the similarity between user preferences and item features, represented by text and image embeddings:
 
-$\max_{i \in \mathcal{I}} \text{cosine\_similarity}(\mathbf{u}, \mathbf{x}_i)$
+$\( \max_{i \in \mathcal{I}} \text{cosine\_similarity}(\mathbf{u}, \mathbf{x}_i) )\$
 
 Where:
 - $\mathbf{u} = \frac{1}{|\mathcal{L}|} \sum_{l \in \mathcal{L}} \mathbf{x}_l$ is the user preference vector (mean of liked item embeddings).
