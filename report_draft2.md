@@ -33,6 +33,95 @@ Cold-start issues in recommendation systems lead to poor user experience, making
 ### Low Rank
 
 ### Two Tower
+# Two-Tower Model for Personalized Recommendations
+
+## Introduction
+
+The Two-Tower Model is a deep learning-based recommendation system designed to learn representations for both users and items in a shared embedding space. The goal is to efficiently compute similarity between users and items, enabling personalized recommendations. The model consists of two separate neural networks—one for users and one for items—which map their respective inputs to a common latent space. The cosine similarity between user and item embeddings is then used to determine relevance. 
+
+This document provides an in-depth explanation of the Two-Tower Model's structure, its implementation in PyTorch, the training process, validation methods, and evaluation metrics. Additionally, it analyzes the visual results obtained from the training process.
+
+---
+
+## Mathematical Formulation
+
+The model learns to encode users and items as fixed-length vectors, allowing for efficient retrieval through similarity computation. The similarity between a user and an item is determined using cosine similarity, which is calculated as follows:
+
+\[
+S(U, I) = \frac{U \cdot I}{\| U \| \| I \|}
+\]
+
+where \( U \) is the user embedding and \( I \) is the item embedding. The closer the cosine similarity is to 1, the more relevant the item is predicted to be for the user.
+
+The model is trained using contrastive learning, with a Binary Cross-Entropy (BCE) loss function. The loss function ensures that positive user-item pairs (items the user has interacted with) have high similarity scores, while negative pairs (randomly chosen items the user has not interacted with) have low similarity scores. The loss function is defined as:
+
+\[
+L = - \sum_{(U, I^+)} \log(S(U, I^+)) - \sum_{(U, I^-)} \log(1 - S(U, I^-))
+\]
+
+where \( I^+ \) denotes a positively interacted item and \( I^- \) denotes a negative item.
+
+---
+
+## Algorithm Choice and Justification
+
+The Two-Tower Model was chosen for its efficiency in large-scale recommendation tasks. Unlike traditional collaborative filtering, which requires direct user-item interaction matrices, the Two-Tower architecture allows for independent processing of users and items. This separation enables precomputing item embeddings, making inference more efficient. The model is particularly effective in cases where multiple input modalities, such as text and images, are involved, as it can process them separately and learn their representations independently.
+
+One of the key advantages of this architecture is its ability to handle new items efficiently. Since the item tower functions independently of specific user data, new items can be embedded without retraining the entire model. However, a key limitation is the cold-start problem for new users who have limited or no interaction history.
+
+---
+
+## Training Process
+
+The model is trained using positive and negative pairs of user-item interactions. The user and item embeddings are computed separately and then compared using cosine similarity. The objective is to push the similarity of positive pairs closer to 1 while ensuring that negative pairs have lower similarity scores.
+
+During training, a dataset is created where for each user, a positive item is chosen from their interaction history, and a negative item is selected randomly. The model is trained using the BCE loss function, and optimization is performed using the Adam optimizer.
+
+The training process is run for multiple epochs, with the loss being monitored to ensure convergence. The training loss curve, as seen in the third image, shows a consistent decrease over epochs, indicating that the model is learning effectively. The initial loss starts high but decreases over time, stabilizing after several epochs.
+
+---
+
+## Validation
+
+To evaluate the model's performance, precision-based metrics are used. Precision at K (Precision@K) measures the proportion of relevant items within the top K recommendations provided to a user. It is computed by checking how many of the recommended items were actually interacted with by the user.
+
+Mean Average Precision at K (MAP@K) extends this concept by incorporating ranking order. It calculates the average precision for each user and then computes the mean across all users. This metric is useful for ensuring that highly relevant items appear earlier in the recommendation list.
+
+The qualitative validation of recommendations is also performed by visually inspecting the results. The first image shows personalized recommendations for multiple users, displaying the top five suggested items along with their images and descriptions. The recommendations appear diverse and relevant to user preferences, suggesting that the model effectively learns item relationships.
+
+---
+
+## Visualization Analysis
+
+### t-SNE Visualization of Item Embeddings
+
+The second image presents a t-SNE visualization of item embeddings, showing how items are clustered based on their learned representations. Each point represents an item, and the colors correspond to different clusters. The distinct grouping of points suggests that the model has successfully captured meaningful patterns in the data.
+
+### Cluster Distribution Analysis
+
+The second image also contains a bar chart displaying the cluster distribution of items. Each bar represents the number of items assigned to a particular cluster. The presence of multiple clusters with fairly even distribution suggests that the embeddings capture diverse item characteristics rather than collapsing into a single dominant category.
+
+### Training Loss Curve
+
+The third image displays the training loss curve, showing how the model's loss decreases over epochs. The sharp decline in the early epochs followed by gradual stabilization indicates that the model is learning efficiently. This suggests that the optimization process is working as expected, leading to improved recommendations over time.
+
+---
+
+## Resource Requirements and Constraints
+
+Given the relatively small dataset used in this implementation, computational constraints are minimal. The primary resource requirement is GPU acceleration for training efficiency, as encoding both text and images using CLIP can be computationally expensive. Since item embeddings can be precomputed, inference time is reduced significantly, making the system scalable for larger datasets.
+
+Memory requirements increase with dataset size, especially when storing high-dimensional embeddings. If the dataset were to grow, approximate nearest neighbor search techniques could be incorporated to improve retrieval speed without significantly increasing computational cost. 
+
+While the current implementation is effective for smaller-scale testing, a real-world deployment would require additional optimizations such as efficient indexing, batch processing, and caching of frequently accessed embeddings.
+
+---
+
+## Conclusion
+
+The Two-Tower Model successfully learns representations for both users and items, allowing for efficient personalized recommendations. The use of contrastive learning ensures that positive interactions are ranked higher than randomly chosen negative samples. The evaluation results indicate that the model is able to generate diverse and relevant recommendations for different users.
+
+The qualitative and quantitative validation processes, including t-SNE visualization, cluster distribution analysis, and training loss monitoring, confirm that the model is learning meaningful item embeddings. The architecture is efficient and scalable, making it well-suited for real-world recommendation systems. Future improvements could focus on handling the cold-start problem for new users, refining hyperparameters for better performance, and integrating additional user behavior signals to enhance recommendation quality.
 
 ### Mathematical formulation (objective function, constraints)
 ### Objective Function  
