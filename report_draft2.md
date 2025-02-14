@@ -1,32 +1,121 @@
-## Problem Statement  
+## Problem Statement
 
 We aim to optimize personalized recommendations for users when they visit a new e-commerce website where they have minimal prior purchase history. Our approach leverages metadata (e.g., product images, reviews, descriptions) from other shopping platforms the user has interacted with to generate relevant recommendations. We integrate this metadata into a graph-based model (GraphSAGE) to improve cold-start recommendation quality.
 
-Cold-start issues in recommendation systems lead to poor user experience, making it difficult for users to receive relevant suggestions when they switch to a new platform. This can cause frustration, reduce engagement, and limit conversions for businesses.  
+Cold-start issues in recommendation systems lead to poor user experience, making it difficult for users to receive relevant suggestions when they switch to a new platform. This can cause frustration, reduce engagement, and limit conversions for businesses.
 
-### Success Metrics  
-- **Recommendation Relevance**: Precision@k, Recall@k, and NDCG to evaluate how well our recommendations match user interests.  
-- **User Engagement**: Click-through rate (CTR) on recommended products.  
+### Success Metrics
+- **Recommendation Relevance**: Precision@k, Recall@k, and NDCG to evaluate how well our recommendations match user interests.
+- **User Engagement**: Click-through rate (CTR) on recommended products.
 
-### Constraints  
-- **Data Availability**: Not all websites expose metadata in the same format (e.g., missing product descriptions, different image qualities).  
-- **Real-Time Performance**: The web extension must generate recommendations quickly without excessive computational overhead.  
-- **User Privacy**: Ensuring ethical data usage without tracking sensitive information.  
+### Constraints
+- **Data Availability**: Not all websites expose metadata in the same format (e.g., missing product descriptions, different image qualities).
+- **Real-Time Performance**: The web extension must generate recommendations quickly without excessive computational overhead.
+- **User Privacy**: Ensuring ethical data usage without tracking sensitive information.
 
-### Required Data  
-- **User interactions** from shopping sites (order history, wish lists, browsing activity).  
-- **Product metadata** (titles, descriptions, images, categories, prices, brands) across multiple websites.  
-- **User-generated content** (ratings, reviews, preferences) from different platforms.  
+### Required Data
+- **User interactions** from shopping sites (order history, wish lists, browsing activity).
+- **Product metadata** (titles, descriptions, images, categories, prices, brands) across multiple websites.
+- **User-generated content** (ratings, reviews, preferences) from different platforms.
 
-### Potential Pitfalls  
-- **Sparse shopping history from other sites**: Recommendations may be weak.  
-- **Metadata Mismatch**: Makes standardization potentially difficult.  
-- **Scale**: Large product graphs may introduce latency in recommendations.  
+### Potential Pitfalls
+- **Sparse shopping history from other sites**: Recommendations may be weak.
+- **Metadata Mismatch**: Makes standardization potentially difficult.
+- **Scale**: Large product graphs may introduce latency in recommendations.
 - **Privacy Concerns**: Tracking user activity across websites must comply with data protection regulations.
 
 
 ## Technical Approach
 ### Collaborative Filtering
+
+#### Mathematical Formulation
+##### Objective Function:
+For collaborative filtering, we aim to predict missing user-item interactions through three main approaches:
+
+1. **User-Based CF:**
+\[
+\hat{r}_{ui} = \frac{\sum_{v \in N_k(u)} sim(u,v) \cdot r_{vi}}{\sum_{v \in N_k(u)} sim(u,v)}
+\]
+where $\hat{r}_{ui}$ is the predicted rating for user u on item i, $N_k(u)$ is the set of k most similar users to u, and sim(u,v) is the cosine similarity between users.
+
+2. **Item-Based CF:**
+\[
+\hat{r}_{ui} = \frac{\sum_{j \in N_k(i)} sim(i,j) \cdot r_{uj}}{\sum_{j \in N_k(i)} sim(i,j)}
+\]
+where $N_k(i)$ is the set of k most similar items to i.
+
+3. **Neural CF:**
+\[
+\hat{r}_{ui} = f(W_2 \cdot ReLU(W_1 \cdot [e_u; e_i] + b_1) + b_2)
+\]
+where $e_u$ and $e_i$ are user and item embeddings, and $W_1$, $W_2$, $b_1$, $b_2$ are learned parameters.
+
+
+##### Constraints:
+1. **Cold-Start:** Limited effectiveness for new users/items
+2. **Scalability:** Computation grows with user/item count
+
+#### Algorithm/Approach Choice and Justification
+We implemented three complementary collaborative filtering approaches:
+
+1. **User-Based CF:**
+- Leverages user similarity patterns
+- Effective for users with overlapping preferences
+- Quick to adapt to new user preferences
+
+2. **Item-Based CF:**
+- More stable than user-based approach
+- Better handles the user cold-start problem
+- More computationally efficient for many systems
+
+3. **Neural CF:**
+- Captures non-linear user-item interactions
+- Learns latent features automatically
+- Better handles sparsity through embedding learning
+
+**Justification:**
+- Multiple approaches provide robustness
+- Each method compensates for others' weaknesses
+- Neural CF adds non-linear modeling capability
+
+#### Validation Methods
+1. **Offline Evaluation:**
+- **Metrics:** RMSE, MAE, Precision@K, Recall@K
+- **Cross-validation:** 5-fold cross-validation
+- **Cold-start Testing:** Hold-out new users/items
+
+2. **Online Testing:**
+- A/B testing different approaches
+- User engagement metrics
+- Click-through rates
+
+3. **Comparative Analysis:**
+- Compare performance across all three approaches
+- Analyze strengths/weaknesses for different user segments
+
+#### Resource Requirements and Constraints
+1. **Computational Resources:**
+- Memory: O(|U| × |I|) for similarity matrices
+- CPU: Significant for large-scale similarity computations
+- GPU: Required for efficient Neural CF training
+
+2. **Storage Requirements:**
+- User-item interaction matrix
+- Similarity matrices
+- Model parameters
+
+3. **Scalability Considerations:**
+- User-based CF: O(|U|²) similarity computations
+- Item-based CF: O(|I|²) similarity computations
+- Neural CF: O(batch_size × embedding_dim)
+
+4. **Performance Constraints:**
+- Real-time recommendation latency
+- Batch update frequency
+- Memory limitations for large datasets
+
+The collaborative filtering implementation provides complementary recommendations to our content-based system. While content-based filtering leverages item features, collaborative filtering captures user behavior patterns and preferences. The combination of both approaches in a hybrid system offers more robust and accurate recommendations.
+
 
 ### Content-Based Filtering
 
@@ -107,7 +196,7 @@ We use CLIP (Contrastive Language-Image Pretraining) to encode both item text de
 
 ## Introduction
 
-The Two-Tower Model is a deep learning-based recommendation system designed to learn representations for both users and items in a shared embedding space. The goal is to efficiently compute similarity between users and items, enabling personalized recommendations. The model consists of two separate neural networks—one for users and one for items—which map their respective inputs to a common latent space. The cosine similarity between user and item embeddings is then used to determine relevance. 
+The Two-Tower Model is a deep learning-based recommendation system designed to learn representations for both users and items in a shared embedding space. The goal is to efficiently compute similarity between users and items, enabling personalized recommendations. The model consists of two separate neural networks—one for users and one for items—which map their respective inputs to a common latent space. The cosine similarity between user and item embeddings is then used to determine relevance.
 
 This document provides an in-depth explanation of the Two-Tower Model's structure, its implementation in PyTorch, the training process, validation methods, and evaluation metrics. Additionally, it analyzes the visual results obtained from the training process.
 
@@ -181,7 +270,7 @@ The third image displays the training loss curve, showing how the model's loss d
 
 Given the relatively small dataset used in this implementation, computational constraints are minimal. The primary resource requirement is GPU acceleration for training efficiency, as encoding both text and images using CLIP can be computationally expensive. Since item embeddings can be precomputed, inference time is reduced significantly, making the system scalable for larger datasets.
 
-Memory requirements increase with dataset size, especially when storing high-dimensional embeddings. If the dataset were to grow, approximate nearest neighbor search techniques could be incorporated to improve retrieval speed without significantly increasing computational cost. 
+Memory requirements increase with dataset size, especially when storing high-dimensional embeddings. If the dataset were to grow, approximate nearest neighbor search techniques could be incorporated to improve retrieval speed without significantly increasing computational cost.
 
 While the current implementation is effective for smaller-scale testing, a real-world deployment would require additional optimizations such as efficient indexing, batch processing, and caching of frequently accessed embeddings.
 
@@ -194,20 +283,20 @@ The Two-Tower Model successfully learns representations for both users and items
 The qualitative and quantitative validation processes, including t-SNE visualization, cluster distribution analysis, and training loss monitoring, confirm that the model is learning meaningful item embeddings. The architecture is efficient and scalable, making it well-suited for real-world recommendation systems. Future improvements could focus on handling the cold-start problem for new users, refining hyperparameters for better performance, and integrating additional user behavior signals to enhance recommendation quality.
 
 ### Mathematical formulation (objective function, constraints)
-### Objective Function  
+### Objective Function
 
 The objective function optimizes a ranking loss for cold-start users/items:
 
 $\max_{\theta} \sum_{u \in U_{cs}} \sum_{i \in I} y_{ui} \log (\sigma(f(u, i))) + (1 - y_{ui}) \log (1 - \sigma(f(u, i)))$
 
-where:  
+where:
 
 
-- $\( U_{cs} \)$ = cold-start users  
-- $\( I \)$ = items  
-- $\( y_{ui} \)$ = binary indicator if user $\( u \)$ engaged with item $\( i \)$  
-- $\( f(u, i) \)$ = GraphSAGE-based scoring function  
-- $\( \sigma \)$ = sigmoid function  
+- $\( U_{cs} \)$ = cold-start users
+- $\( I \)$ = items
+- $\( y_{ui} \)$ = binary indicator if user $\( u \)$ engaged with item $\( i \)$
+- $\( f(u, i) \)$ = GraphSAGE-based scoring function
+- $\( \sigma \)$ = sigmoid function
 
 
 ### Algorithm/approach choice and justification
@@ -228,117 +317,117 @@ where:
 ### Resource requirements and constraints
 - Since we are fine-tuning the embeddings as well as running machine learning models to generate our predictions, we will probably need GPUs beyond the free-tier provided by Google Colab
 
-## Initial Results  
+## Initial Results
 
-### CLIP Embeddings for Unsupervised Clothing Image Clustering  
+### CLIP Embeddings for Unsupervised Clothing Image Clustering
 
-To test the feasibility of using CLIP embeddings for unsupervised clothing image clustering, I conducted two separate experiments using different datasets.  
+To test the feasibility of using CLIP embeddings for unsupervised clothing image clustering, I conducted two separate experiments using different datasets.
 
-- **Dataset 1:** A small collection of **76 images** obtained from shopping websites, featuring various types of clothing, including pants, t-shirts, blouses, and hoodies. Some images contained models wearing the clothes, while others displayed the garments alone.  
-- **Dataset 2:** A subset of **1,000 images** from the **Fashion-MNIST dataset**, used to assess the model's performance on a larger but still manageable dataset.  
+- **Dataset 1:** A small collection of **76 images** obtained from shopping websites, featuring various types of clothing, including pants, t-shirts, blouses, and hoodies. Some images contained models wearing the clothes, while others displayed the garments alone.
+- **Dataset 2:** A subset of **1,000 images** from the **Fashion-MNIST dataset**, used to assess the model's performance on a larger but still manageable dataset.
 
-For clustering, I initially attempted **DBSCAN** using both Euclidean distance and cosine similarity. However, DBSCAN failed to form any clusters in both datasets, likely due to the high dimensionality and sparse nature of the embedding space.  
+For clustering, I initially attempted **DBSCAN** using both Euclidean distance and cosine similarity. However, DBSCAN failed to form any clusters in both datasets, likely due to the high dimensionality and sparse nature of the embedding space.
 
-I then switched to **HDBSCAN**, which is better suited for variable density data:  
-- **Custom shopping dataset**: Resulted in **three clusters**.  
-- **Fashion-MNIST dataset**: Produced **33 clusters**.  
+I then switched to **HDBSCAN**, which is better suited for variable density data:
+- **Custom shopping dataset**: Resulted in **three clusters**.
+- **Fashion-MNIST dataset**: Produced **33 clusters**.
 
-Given the relatively small dataset sizes, the code executed in under a minute, consuming less than 10% of the CPU.  
-
----
-
-## Evidence Your Implementation Works  
-
-- Successfully **extracted CLIP embeddings** for all images.  
-- Applied **clustering algorithms** to organize similar clothing items.  
-- HDBSCAN produced meaningful groupings:  
-  - In the **custom dataset**, three clusters predominantly grouped **sweaters, sweatpants, and dresses/skirts**.  
-  - In **Fashion-MNIST**, 33 clusters were identified, many correctly grouping similar clothing items.  
-- However, there were **many outliers**, particularly among **patterned clothing**, suggesting the model struggles with learning fabric textures.  
+Given the relatively small dataset sizes, the code executed in under a minute, consuming less than 10% of the CPU.
 
 ---
 
-## Basic Performance Metrics  
+## Evidence Your Implementation Works
 
-Performance varied between the two datasets:  
-
-- **Custom Shopping Dataset (76 images)**  
-  - Ran in under **one minute**, using less than **5% CPU**.  
-  - HDBSCAN identified **three clusters**, successfully distinguishing between broad categories of clothing.  
-  - **Struggled with patterned items.**  
-
-- **Fashion-MNIST Dataset (1,000 images)**  
-  - Completed in a **few minutes**, maintaining minimal CPU usage.  
-  - HDBSCAN produced **33 clusters**, showing a more refined grouping of clothing items.  
-  - Some clusters mixed different clothing types, but overall, the larger dataset improved clustering performance.  
+- Successfully **extracted CLIP embeddings** for all images.
+- Applied **clustering algorithms** to organize similar clothing items.
+- HDBSCAN produced meaningful groupings:
+  - In the **custom dataset**, three clusters predominantly grouped **sweaters, sweatpants, and dresses/skirts**.
+  - In **Fashion-MNIST**, 33 clusters were identified, many correctly grouping similar clothing items.
+- However, there were **many outliers**, particularly among **patterned clothing**, suggesting the model struggles with learning fabric textures.
 
 ---
 
-## Test Case Results  
+## Basic Performance Metrics
 
-- **DBSCAN (Euclidean & Cosine Similarity)**: Failed to generate meaningful clusters in both datasets.  
-- **HDBSCAN (Custom Dataset)**:  
-  - Formed **three distinct clusters**: **sweaters, sweatpants, and dresses/skirts**.  
-- **HDBSCAN (Fashion-MNIST Dataset)**:  
-  - Formed **33 clusters**, many accurately grouping similar clothing items.  
-  - Some clusters contained **mixed clothing types**.  
-  - **Outliers remained an issue**, especially for patterned garments.  
+Performance varied between the two datasets:
 
-These results suggest that **CLIP embeddings are useful for capturing high-level visual similarities**, but may struggle with **fine-grained details such as fabric textures and small design variations**.  
+- **Custom Shopping Dataset (76 images)**
+  - Ran in under **one minute**, using less than **5% CPU**.
+  - HDBSCAN identified **three clusters**, successfully distinguishing between broad categories of clothing.
+  - **Struggled with patterned items.**
 
----
-
-## Current Limitations  
-
-1. **Presence of outliers**, particularly among patterned clothing.  
-2. **Lack of texture understanding**: CLIP may not fully capture fabric material similarities.  
-3. **Small dataset size**:  
-   - DBSCAN may require more samples to form meaningful clusters.  
-   - Small sample size could contribute to suboptimal clustering results.  
-4. **High number of clusters in Fashion-MNIST**:  
-   - Some clusters contained **mixed clothing categories**.  
-   - Hyperparameters such as `min_samples` and `cluster_selection_epsilon` may need fine-tuning.  
+- **Fashion-MNIST Dataset (1,000 images)**
+  - Completed in a **few minutes**, maintaining minimal CPU usage.
+  - HDBSCAN produced **33 clusters**, showing a more refined grouping of clothing items.
+  - Some clusters mixed different clothing types, but overall, the larger dataset improved clustering performance.
 
 ---
 
-## Resource Usage Measurements  
+## Test Case Results
 
-- **Custom Shopping Dataset (76 images)**:  
-  - **Executed in under a minute**.  
-  - **Used less than 5% CPU**.  
-  - Minimal resource demand due to small dataset size.  
+- **DBSCAN (Euclidean & Cosine Similarity)**: Failed to generate meaningful clusters in both datasets.
+- **HDBSCAN (Custom Dataset)**:
+  - Formed **three distinct clusters**: **sweaters, sweatpants, and dresses/skirts**.
+- **HDBSCAN (Fashion-MNIST Dataset)**:
+  - Formed **33 clusters**, many accurately grouping similar clothing items.
+  - Some clusters contained **mixed clothing types**.
+  - **Outliers remained an issue**, especially for patterned garments.
 
-- **Fashion-MNIST Dataset (1,000 images)**:  
-  - **Completed in a few minutes**.  
-  - **Minimal CPU usage**.  
-  - Could benefit from **GPU acceleration** for larger datasets.  
-
-At this stage, **memory consumption and processing time have not posed significant challenges**.  
+These results suggest that **CLIP embeddings are useful for capturing high-level visual similarities**, but may struggle with **fine-grained details such as fabric textures and small design variations**.
 
 ---
 
-## Unexpected Challenges  
+## Current Limitations
 
-- **DBSCAN Failure:**  
-  - Did not cluster the data, even with cosine similarity.  
-  - Likely due to the **sparse distribution of high-dimensional feature vectors** from CLIP embeddings.  
-
-- **Significant number of outliers**:  
-  - Especially among **patterned clothing**, suggesting that CLIP embeddings may not capture texture well.  
-
-- **Higher-than-expected cluster count in Fashion-MNIST**:  
-  - Some clusters mixed different types of clothing.  
-  - Clustering parameters need further **refinement and hyperparameter tuning**.  
+1. **Presence of outliers**, particularly among patterned clothing.
+2. **Lack of texture understanding**: CLIP may not fully capture fabric material similarities.
+3. **Small dataset size**:
+   - DBSCAN may require more samples to form meaningful clusters.
+   - Small sample size could contribute to suboptimal clustering results.
+4. **High number of clusters in Fashion-MNIST**:
+   - Some clusters contained **mixed clothing categories**.
+   - Hyperparameters such as `min_samples` and `cluster_selection_epsilon` may need fine-tuning.
 
 ---
 
-## Future Work  
+## Resource Usage Measurements
 
-- **Optimize clustering parameters** to improve grouping accuracy.  
-- **Experiment with additional datasets**, particularly fashion-specific datasets.  
-- **Explore fine-tuning CLIP embeddings** or incorporating additional **texture-sensitive feature extraction techniques**.  
-- **Test GPU acceleration** for larger datasets to reduce execution time.  
-- **Investigate hybrid approaches**: Combine CLIP embeddings with other visual features (e.g., handcrafted texture features) for better clustering performance.  
+- **Custom Shopping Dataset (76 images)**:
+  - **Executed in under a minute**.
+  - **Used less than 5% CPU**.
+  - Minimal resource demand due to small dataset size.
+
+- **Fashion-MNIST Dataset (1,000 images)**:
+  - **Completed in a few minutes**.
+  - **Minimal CPU usage**.
+  - Could benefit from **GPU acceleration** for larger datasets.
+
+At this stage, **memory consumption and processing time have not posed significant challenges**.
+
+---
+
+## Unexpected Challenges
+
+- **DBSCAN Failure:**
+  - Did not cluster the data, even with cosine similarity.
+  - Likely due to the **sparse distribution of high-dimensional feature vectors** from CLIP embeddings.
+
+- **Significant number of outliers**:
+  - Especially among **patterned clothing**, suggesting that CLIP embeddings may not capture texture well.
+
+- **Higher-than-expected cluster count in Fashion-MNIST**:
+  - Some clusters mixed different types of clothing.
+  - Clustering parameters need further **refinement and hyperparameter tuning**.
+
+---
+
+## Future Work
+
+- **Optimize clustering parameters** to improve grouping accuracy.
+- **Experiment with additional datasets**, particularly fashion-specific datasets.
+- **Explore fine-tuning CLIP embeddings** or incorporating additional **texture-sensitive feature extraction techniques**.
+- **Test GPU acceleration** for larger datasets to reduce execution time.
+- **Investigate hybrid approaches**: Combine CLIP embeddings with other visual features (e.g., handcrafted texture features) for better clustering performance.
 
 ## Next Steps
 ### Immediate Improvements Needed
