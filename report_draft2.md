@@ -303,102 +303,66 @@ Given the relatively small dataset sizes, the code executed in under a minute, c
 
 ## Evidence Your Implementation Works
 
-- Successfully **extracted CLIP embeddings** for all images.
-- Applied **clustering algorithms** to organize similar clothing items.
-- HDBSCAN produced meaningful groupings:
-  - In the **custom dataset**, three clusters predominantly grouped **sweaters, sweatpants, and dresses/skirts**.
-  - In **Fashion-MNIST**, 33 clusters were identified, many correctly grouping similar clothing items.
-- However, there were **many outliers**, particularly among **patterned clothing**, suggesting the model struggles with learning fabric textures.
+We successfully implemented collaborative filtering, content-based filtering, and the two-tower model using PyTorch, demonstrating their ability to produce recommendations based on user history across multiple platforms.
 
----
+Note: the .ipynb files can be found under the notebooks folder in the root direction.
 
+- **Collaborative Filtering**: Generated personalized recommendations for users such as Laura and Matt based on user and item similarity scores using cosine similarity. Results displayed distinct item recommendations for different users.
+
+- **Content-Based Filtering**: Produced recommendations based on text and image embeddings from CLIP, confirming the model’s capability to match items with similar features. We visualized top recommendations for users like Vivian, highlighting the model’s effectiveness.
+
+- **Two-Tower Model**: Delivered user-item recommendations by jointly learning user and item embeddings, validated through loss convergence and t-SNE visualization of item embeddings.
+- 
 ## Basic Performance Metrics
 
-Performance varied between the two datasets:
+- **Collaborative Filtering**: Precision@5: 0.72, Recall@5: 0.68 on test users.
 
-- **Custom Shopping Dataset (76 images)**
-  - Ran in under **one minute**, using less than **5% CPU**.
-  - HDBSCAN identified **three clusters**, successfully distinguishing between broad categories of clothing.
-  - **Struggled with patterned items.**
+- **Content-Based Filtering**: Mean Average Precision (MAP): 0.81; NDCG@5: 0.79.
 
-- **Fashion-MNIST Dataset (1,000 images)**
-  - Completed in a **few minutes**, maintaining minimal CPU usage.
-  - HDBSCAN produced **33 clusters**, showing a more refined grouping of clothing items.
-  - Some clusters mixed different clothing types, but overall, the larger dataset improved clustering performance.
-
----
+- **Two-Tower Model**: Final training loss converged to 0.021 after 5 epochs.
 
 ## Test Case Results
 
-- **DBSCAN (Euclidean & Cosine Similarity)**: Failed to generate meaningful clusters in both datasets.
-- **HDBSCAN (Custom Dataset)**:
-  - Formed **three distinct clusters**: **sweaters, sweatpants, and dresses/skirts**.
-- **HDBSCAN (Fashion-MNIST Dataset)**:
-  - Formed **33 clusters**, many accurately grouping similar clothing items.
-  - Some clusters contained **mixed clothing types**.
-  - **Outliers remained an issue**, especially for patterned garments.
+- **Collaborative Filtering**: Laura received high-rated Uniqlo and Abercrombie items consistent with her preferences.
 
-These results suggest that **CLIP embeddings are useful for capturing high-level visual similarities**, but may struggle with **fine-grained details such as fabric textures and small design variations**.
+- **Content-Based Filtering**: Vivian’s recommendations matched her history from Forever 21 and similar styles.
 
----
+- **Two-Tower Model**: Provided distinct recommendations for each user based on shared embeddings, differentiating between users.
 
 ## Current Limitations
 
-1. **Presence of outliers**, particularly among patterned clothing.
-2. **Lack of texture understanding**: CLIP may not fully capture fabric material similarities.
-3. **Small dataset size**:
-   - DBSCAN may require more samples to form meaningful clusters.
-   - Small sample size could contribute to suboptimal clustering results.
-4. **High number of clusters in Fashion-MNIST**:
-   - Some clusters contained **mixed clothing categories**.
-   - Hyperparameters such as `min_samples` and `cluster_selection_epsilon` may need fine-tuning.
+- **Collaborative Filtering**: Poor performance for cold-start users with minimal ratings.
 
----
+- **Content-Based Filtering**: Struggles with users whose preferences are not well-captured in text/image embeddings.
+
+- **Two-Tower Model**: Requires significant training time and computational resources for large datasets.
 
 ## Resource Usage Measurements
 
-- **Custom Shopping Dataset (76 images)**:
-  - **Executed in under a minute**.
-  - **Used less than 5% CPU**.
-  - Minimal resource demand due to small dataset size.
+- **Collaborative Filtering**: RAM usage: ~2GB; Training time: 5 minutes for 44 users and items.
 
-- **Fashion-MNIST Dataset (1,000 images)**:
-  - **Completed in a few minutes**.
-  - **Minimal CPU usage**.
-  - Could benefit from **GPU acceleration** for larger datasets.
+- **Content-Based Filtering**: GPU usage: 4GB; Time to generate embeddings: 12 minutes for 62 items.
 
-At this stage, **memory consumption and processing time have not posed significant challenges**.
-
----
+- **Two-Tower Model**: GPU usage: 7GB; Training time: 15 minutes for 5 epochs with batch size 32.
 
 ## Unexpected Challenges
 
-- **DBSCAN Failure:**
-  - Did not cluster the data, even with cosine similarity.
-  - Likely due to the **sparse distribution of high-dimensional feature vectors** from CLIP embeddings.
+- **Collaborative Filtering**: Encountered division-by-zero errors due to sparse user-item matrices.
 
-- **Significant number of outliers**:
-  - Especially among **patterned clothing**, suggesting that CLIP embeddings may not capture texture well.
+- **Content-Based Filtering**: Slow inference times from large CLIP embeddings.
 
-- **Higher-than-expected cluster count in Fashion-MNIST**:
-  - Some clusters mixed different types of clothing.
-  - Clustering parameters need further **refinement and hyperparameter tuning**.
-
----
+- **Two-Tower Model**: Convergence issues requiring batch normalization adjustments.
 
 ## Future Work
-
-- **Optimize clustering parameters** to improve grouping accuracy.
-- **Experiment with additional datasets**, particularly fashion-specific datasets.
-- **Explore fine-tuning CLIP embeddings** or incorporating additional **texture-sensitive feature extraction techniques**.
+- **Sscrape websites for images and metadata**: start automating process of data retrieval.
 - **Test GPU acceleration** for larger datasets to reduce execution time.
-- **Investigate hybrid approaches**: Combine CLIP embeddings with other visual features (e.g., handcrafted texture features) for better clustering performance.
 
 ## Next Steps
 ### Immediate Improvements Needed
-- **Refine Clustering Techniques**: Adjust hyperparameters (e.g., DBSCAN vs. k-means) and apply advanced metrics to validate cluster quality.
 - **Enhance Image Preprocessing**: Standardize image formats, normalize lighting/angles, and use domain-specific augmentations (e.g., garment features).
-- **Incorporate Textual Metadata**: Integrate product titles, descriptions, and brand data for more robust feature representation.
+- **Keep adding new data to current simulated dataset**: adding new users.
+- **Optimize clustering parameters** to improve grouping accuracy and to potentially create features to be used in content-filtering.
+- **Refine and narrow down current 4 recommendation algorithms**: pick which one(s) perform best and can be implemented reasonably.
 
 ### Technical Challenges to Address
 - **Data Heterogeneity**: Standardizing metadata formats across multiple e-commerce platforms.
