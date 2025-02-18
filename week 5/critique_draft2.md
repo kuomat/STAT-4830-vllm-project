@@ -7,7 +7,6 @@
 - **Evidence of Implementation:** Results from all three major models include performance metrics and visualizations.
 
 ### **Weaknesses**
-- **Low-Rank Matrix Completion:** Missing implementation details and results compared to the other three methods.
 - **Resource Measurements:** While resource usage for models is presented, there is no discussion on efficiency improvements or runtime bottlenecks.
 - **Evaluation Limitations:** Current evaluation does not compare methods directly or assess hybrid models.
 
@@ -17,7 +16,6 @@
 - **Cold-Start User Profiles:** Assumes preferences from other platforms will be representative, which may not hold true.
 
 ### **Concrete Next Actions**
-1. **Complete Low-Rank Matrix Completion:** Implement, evaluate, and compare against other models.
 2. **Compare Models:** Conduct a comparative analysis (Precision@k, Recall@k, NDCG) across all four methods.
 3. **Experiment with Hybrid Approaches:** Combine collaborative and content-based filtering to address weaknesses.
 4. **Optimize Scalability:** Explore ANN search for fast recommendations at scale.
