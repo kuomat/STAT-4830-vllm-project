@@ -193,33 +193,33 @@ We use CLIP (Contrastive Language-Image Pretraining) to encode both item text de
 #### Mathematical Formulation
 
 **Objective Function:**  
-For low-rank matrix completion, we treat the user–item rating matrix \(M\) as approximately factored into 
-\(U \in \mathbb{R}^{m \times r}\) and \(V \in \mathbb{R}^{n \times r}\), giving \( M \approx U \times V^\top\).  
-We only compute reconstruction error over known entries in \(M\). Let \(\Omega\) be the set of observed \((i,j)\) pairs; then our objective is:
+For low-rank matrix completion, we treat the user–item rating matrix $M$ as approximately factored into 
+$U \in \mathbb{R}^{m \times r}$ and $V \in \mathbb{R}^{n \times r}$, giving $M \approx U \times V^\top$.  
+We only compute reconstruction error over known entries in $M$. Let $\Omega$ be the set of observed $(i,j)$ pairs; then our objective is:
 
-\[
+$$
 \min_{U, V} \sum_{(i,j)\in \Omega} \bigl(M_{ij} - (UV^\top)_{ij}\bigr)^2
-\]
+$$
 
 **Constraints:**  
-- **Rank Constraint:** \(U\) and \(V\) must each have rank \(\le r\).  
+- **Rank Constraint:** $U$ and $V$ must each have rank $\le r$.  
 - **Cold-Start:** New users/items with no known entries still pose challenges.  
 - **Sparsity:** Additional regularization or side information may be needed for very sparse data.
 
 #### Algorithm/Approach Choice and Justification
 
-- **Burer–Monteiro Factorization:** We directly optimize \(U\) and \(V\) instead of a full \((m \times n)\) matrix.
-- **Memory Efficiency:** Requires storing only \((m + n)\times r\) floats, much smaller than a full matrix for large \(m,n\).
+- **Burer–Monteiro Factorization:** We directly optimize $U$ and $V$ instead of a full $(m \times n)$ matrix.
+- **Memory Efficiency:** Requires storing only $(m + n)\times r$ floats, much smaller than a full matrix for large $m,n$.
 - **Flexibility:** Easy to add user or item biases, or partial side embeddings.
 
 #### Implementation Steps
 
-1. **Initialize** \(U\) (\(m \times r\)) and \(V\) (\(n \times r\)) randomly.
-2. **Create a mask** for known entries in \(M\); fill unknown cells with 0 (or mean).
-3. **Compute Predictions** as \(\hat{M} = U \times V^\top\).
+1. **Initialize** $U$ ($(m \times r)$) and $V$ ($(n \times r)$) randomly.
+2. **Create a mask** for known entries in $M$; fill unknown cells with 0 (or mean).
+3. **Compute Predictions** as $\hat{M} = U \times V^\top$.
 4. **Loss Computation** on known entries only:
-   \(\sum_{(i,j)\in \Omega} (M_{ij} - \hat{M}_{ij})^2\).
-5. **Backprop/Optimize** using Adam or SGD to update \(U\) and \(V\).
+   $\sum_{(i,j)\in \Omega} (M_{ij} - \hat{M}_{ij})^2$.
+5. **Backprop/Optimize** using Adam or SGD to update $U$ and $V$.
 6. **Repeat** until convergence or until the epoch limit is reached.
 
 #### Validation Methods
@@ -232,7 +232,7 @@ We only compute reconstruction error over known entries in \(M\). Let \(\Omega\)
 
 - **Hardware:**
    - **GPU:** Recommended for large-scale factorization with PyTorch.
-   - **Memory:** Dependent on \((m + n)\times r\); large datasets may require 16GB+ RAM.
+   - **Memory:** Dependent on $(m + n)\times r$; large datasets may require 16GB+ RAM.
 
 - **Software:**
    - Python 3.10+
