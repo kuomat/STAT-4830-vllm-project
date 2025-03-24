@@ -37,13 +37,13 @@ For collaborative filtering, we aim to predict missing user-item interactions th
 
 1. **User-Based CF:**
 
-$$\hat{r}_{ui} =\frac{\sum_{v \in N_k(u)} sim(u,v) \cdot r_{vi}}{\sum_{v \in N_k(u)} sim(u,v)}$$
+$\hat{r}_{ui}$ = $\frac{\sum_{v \in N_k(u)} sim(u,v) \cdot r_{vi}}{\sum_{v \in N_k(u)} sim(u,v)}$
 
 where $\hat{r}_{ui}$ is the predicted rating for user u on item i, $N_k(u)$ is the set of k most similar users to u, and sim(u,v) is the cosine similarity between users.
 
 2. **Item-Based CF:**
 
-$$\hat{r}_{ui} =\frac{\sum_{j \in N_k(i)} sim(i,j) \cdot r_{uj}}{\sum_{j \in N_k(i)} sim(i,j)}$$
+$$\hat{r}_{ui} = \frac{\sum_{j \in N_k(i)} sim(i,j) \cdot r_{uj}}{\sum_{j \in N_k(i)} sim(i,j)}$$
 
 where $N_k(i)$ is the set of k most similar items to i.
 
