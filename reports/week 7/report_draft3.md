@@ -36,21 +36,21 @@ Cold-start issues in recommendation systems lead to poor user experience, making
 For collaborative filtering, we aim to predict missing user-item interactions through three main approaches:
 
 1. **User-Based CF:**
-$$
-\hat{r}_{ui} = \frac{\sum_{v \in N_k(u)} sim(u,v) \cdot r_{vi}}{\sum_{v \in N_k(u)} sim(u,v)}
-$$
+
+$$\hat{r}_{ui} = \frac{\sum_{v \in N_k(u)} sim(u,v) \cdot r_{vi}}{\sum_{v \in N_k(u)} sim(u,v)}$$
+
 where $\hat{r}_{ui}$ is the predicted rating for user u on item i, $N_k(u)$ is the set of k most similar users to u, and sim(u,v) is the cosine similarity between users.
 
 2. **Item-Based CF:**
-$$
-\hat{r}_{ui} = \frac{\sum_{j \in N_k(i)} sim(i,j) \cdot r_{uj}}{\sum_{j \in N_k(i)} sim(i,j)}
-$$
+
+$$\hat{r}_{ui} = \frac{\sum_{j \in N_k(i)} sim(i,j) \cdot r_{uj}}{\sum_{j \in N_k(i)} sim(i,j)}$$
+
 where $N_k(i)$ is the set of k most similar items to i.
 
 3. **Neural CF:**
-$$
-\hat{r}_{ui} = f(W_2 \cdot ReLU(W_1 \cdot [e_u; e_i] + b_1) + b_2)
-$$
+
+$$\hat{r}_{ui} = f(W_2 \cdot ReLU(W_1 \cdot [e_u; e_i] + b_1) + b_2)$$
+
 where $e_u$ and $e_i$ are user and item embeddings, and $W_1$, $W_2$, $b_1$, $b_2$ are learned parameters.
 
 
@@ -78,7 +78,7 @@ We implemented three complementary collaborative filtering approaches:
 - Learns latent features automatically
 - Better handles sparsity through embedding learning
 
-**Justification:**
+##### Justification:
 - Multiple approaches provide robustness
 - Each method compensates for others' weaknesses
 - Neural CF adds non-linear modeling capability
@@ -162,7 +162,7 @@ $$
 ##### Approach: Content-Based Filtering with CLIP Embeddings
 We use CLIP (Contrastive Language-Image Pretraining) to encode both item text descriptions and images into a shared feature space. By relying on item content rather than user interaction history, we address the cold-start problem effectively.
 
-**Justification:**
+##### Justification:
 - **Rich Representations:** CLIP embeddings capture semantic meaning from both text and images.
 - **No User History Required:** Suitable for cold-start scenarios.
 - **Efficient Similarity Computation:** Cosine similarity is fast and efficient.
@@ -261,7 +261,7 @@ We apply **low-rank matrix factorization using the Burer–Monteiro parameteriza
 - Use of a projection layer to initialize $U$ from content embeddings.
 - Training via gradient descent with regularization.
 
-**Advantages:**
+##### Advantages:
 - Memory efficient (only $(m + n)\times k$ parameters)
 - Flexible: easily incorporates side information (e.g., text/image features)
 - Compatible with binary or real-valued ratings
@@ -277,16 +277,16 @@ We apply **low-rank matrix factorization using the Burer–Monteiro parameteriza
    - Try multiple values of $k$ using a fixed train/test split to find optimal rank.
 
 3. **Projection Initialization:**
-   - Use item-level features (text + image embeddings + price) and project to $ k $-dim space.
+   - Use item-level features (text + image embeddings + price) and project to $k$-dim space.
 
 4. **Training Loop:**
-   - Define $ U, V $ as PyTorch parameters
-   - Compute predictions as $ \hat{R} = UV^T $
+   - Define $U, V$ as PyTorch parameters
+   - Compute predictions as $\hat{R} = UV^T$
    - Compute masked MSE loss + L2 regularization
    - Optimize with Adam
 
 5. **Prediction and Recommendation:**
-   - Compute $ \hat{R} $ after training
+   - Compute $\hat{R}$ after training
    - For each user, recommend highest predicted unrated items
 
 . . . . . . . . . . . . . . . . . . . .
@@ -296,7 +296,7 @@ We apply **low-rank matrix factorization using the Burer–Monteiro parameteriza
 - **Elbow Method:** Grid search ranks and plot validation loss to find optimal $k$
 - **Offline Metrics:** RMSE and MSE on held-out test ratings
 - **Qualitative Evaluation:** Top-N recommendations visualized for users
-- **Binary Mode Testing:** Converted real-valued matrix into $ \{-1, 1\} $ labels to simulate preference learning
+- **Binary Mode Testing:** Converted real-valued matrix into $\{-1, 1\}$ labels to simulate preference learning
 
 . . . . . . . . . . . . . . . . . . . .
 
@@ -304,7 +304,7 @@ We apply **low-rank matrix factorization using the Burer–Monteiro parameteriza
 
 - **Hardware:**
   - GPU strongly recommended for efficient training
-  - Memory scales with $ (m + n)\times k $
+  - Memory scales with $(m + n)\times k$
 
 - **Software:**
   - Python, PyTorch, NumPy, pandas
@@ -355,7 +355,7 @@ Instead of learning one large joint embedding space for user-item pairs, the Two
 - A **user tower**: maps user embedding into latent space
 - An **item tower**: maps item embedding into latent space
 
-**Advantages:**
+##### Advantages:
 - Enables **precomputing item embeddings** for efficient retrieval
 - Effective for **multimodal inputs** (text, images)
 - Scalable for large candidate sets
