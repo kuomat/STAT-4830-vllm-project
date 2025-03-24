@@ -36,21 +36,15 @@ Cold-start issues in recommendation systems lead to poor user experience, making
 For collaborative filtering, we aim to predict missing user-item interactions through three main approaches:
 
 1. **User-Based CF:**
-$$
-\hat{r}_{ui} = \frac{\sum_{v \in N_k(u)} sim(u,v) \cdot r_{vi}}{\sum_{v \in N_k(u)} sim(u,v)}
-$$
+$ \hat{r}_{ui} = \frac{\sum_{v \in N_k(u)} sim(u,v) \cdot r_{vi}}{\sum_{v \in N_k(u)} sim(u,v)} $
 where $\hat{r}_{ui}$ is the predicted rating for user u on item i, $N_k(u)$ is the set of k most similar users to u, and sim(u,v) is the cosine similarity between users.
 
 2. **Item-Based CF:**
-$$
-\hat{r}_{ui} = \frac{\sum_{j \in N_k(i)} sim(i,j) \cdot r_{uj}}{\sum_{j \in N_k(i)} sim(i,j)}
-$$
+$ \hat{r}_{ui} = \frac{\sum_{j \in N_k(i)} sim(i,j) \cdot r_{uj}}{\sum_{j \in N_k(i)} sim(i,j)} $
 where $N_k(i)$ is the set of k most similar items to i.
 
 3. **Neural CF:**
-$$
-\hat{r}_{ui} = f(W_2 \cdot ReLU(W_1 \cdot [e_u; e_i] + b_1) + b_2)
-$$
+$ \hat{r}_{ui} = f(W_2 \cdot ReLU(W_1 \cdot [e_u; e_i] + b_1) + b_2) $
 where $e_u$ and $e_i$ are user and item embeddings, and $W_1$, $W_2$, $b_1$, $b_2$ are learned parameters.
 
 
@@ -58,7 +52,8 @@ where $e_u$ and $e_i$ are user and item embeddings, and $W_1$, $W_2$, $b_1$, $b_
 1. **Cold-Start:** Limited effectiveness for new users/items
 2. **Scalability:** Computation grows with user/item count
 
-. . . . . . . . . . . . . . . . . . . .
+<hr style="border-top: 1px dotted #bbb;" />
+
 
 #### Algorithm/Approach Choice and Justification
 We implemented three complementary collaborative filtering approaches:
@@ -73,7 +68,7 @@ We implemented three complementary collaborative filtering approaches:
 - Better handles the user cold-start problem
 - More computationally efficient for many systems
 
-3. **Neural CF (Extension):**
+3. **Neural CF:**
 - Captures non-linear user-item interactions
 - Learns latent features automatically
 - Better handles sparsity through embedding learning
