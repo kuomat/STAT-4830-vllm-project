@@ -36,14 +36,16 @@ Cold-start issues in recommendation systems lead to poor user experience, making
 For collaborative filtering, we aim to predict missing user-item interactions through three main approaches:
 
 1. **User-Based CF:**
-
-$$\hat{r}_{ui} = \frac{\sum_{v \in N_k(u)} sim(u,v) \cdot r_{vi}}{\sum_{v \in N_k(u)} sim(u,v)}$$
+$$
+\hat{r}_{ui} = \frac{\sum_{v \in N_k(u)} \text{sim}(u,v) \cdot r_{vi}}{\sum_{v \in N_k(u)} \text{sim}(u,v)}
+$$
 
 where $\hat{r}_{ui}$ is the predicted rating for user u on item i, $N_k(u)$ is the set of k most similar users to u, and sim(u,v) is the cosine similarity between users.
 
 2. **Item-Based CF:**
-
-$$\hat{r}_{ui} = \frac{\sum_{j \in N_k(i)} sim(i,j) \cdot r_{uj}}{\sum_{j \in N_k(i)} sim(i,j)}$$
+$$
+\hat{r}_{ui} = \frac{\sum_{j \in N_k(i)} \text{sim}(i,j) \cdot r_{uj}}{\sum_{j \in N_k(i)} \text{sim}(i,j)}
+$$
 
 where $N_k(i)$ is the set of k most similar items to i.
 
@@ -56,7 +58,8 @@ where $e_u$ and $e_i$ are user and item embeddings, and $W_1$, $W_2$, $b_1$, $b_
 
 ##### Constraints:
 1. **Cold-Start:** Limited effectiveness for new users/items
-2. **Scalability:** Computation grows with user/item count
+2. **Sparsity**: Works best when user-item interaction matrix is sufficiently populated.
+3. **Scalability:** Computation grows with user/item count
 
 . . . . . . . . . . . . . . . . . . . .
 
@@ -78,20 +81,22 @@ We implemented three complementary collaborative filtering approaches:
 - Learns latent features automatically
 - Better handles sparsity through embedding learning
 
-##### Justification:
-- Multiple approaches provide robustness
-- Each method compensates for others' weaknesses
-- Neural CF adds non-linear modeling capability
+#### Justification:
+Each method brings unique strengths: user-based models are quick to adapt, item-based methods are often more stable, and NCF handles sparsity and nonlinear preference modeling better.
 
 . . . . . . . . . . . . . . . . . . . .
 
 #### PyTorch Implementation Strategy
 
-1. **Extract Vectors:** Build user-item interaction matrix from dataset and convert to tensor format.
-2. **Compute Similarities:** Use cosine similarity (`sklearn.metrics.pairwise.cosine_similarity`) to measure closeness between users (for user-based CF) or items (for item-based CF).
-3. **Select Top-N Neighbors:** For each target user or item, select the top-k most similar users/items using torch topk operations.
-4. **Score Prediction:** Predict ratings or scores for unseen items by taking a weighted average of ratings from neighbors.
-5. **Recommendation:** Sort predicted scores and recommend the top-ranked items to the user.
+- **Preprocessing**: Construct a user-item rating matrix and create masked arrays for known ratings.
+- **User/Item CF**:
+  - Compute cosine similarity using `sklearn.metrics.pairwise.cosine_similarity`.
+  - Generate predictions based on top-k similar users/items using weighted averages.
+
+- **Neural CF**:
+  - Use PyTorch to define an embedding-based MLP architecture.
+  - Train with MSE loss using known (user, item, rating) triplets.
+  - Predict ratings for unknown items via forward pass and sort top-N.
 
 For efficiency, batch operations were implemented using PyTorch tensors. Cosine similarities and predictions were computed on the fly using sparse matrix multiplication.
 
@@ -117,8 +122,8 @@ For efficiency, batch operations were implemented using PyTorch tensors. Cosine 
 #### Resource Requirements and Constraints
 1. **Computational Resources:**
 - Memory: $O(|U| \times |I|)$ for similarity matrices
-- CPU: Significant for large-scale similarity computations
-- GPU: Required for efficient Neural CF training
+- 2–4GB RAM sufficient for baseline CF
+- GPU used for Neural CF training
 
 2. **Storage Requirements:**
 - User-item interaction matrix
@@ -356,9 +361,9 @@ Instead of learning one large joint embedding space for user-item pairs, the Two
 - An **item tower**: maps item embedding into latent space
 
 ##### Advantages:
-- Enables **precomputing item embeddings** for efficient retrieval
-- Effective for **multimodal inputs** (text, images)
-- Scalable for large candidate sets
+- **Modular Architecture**: Two separate towers allow for efficient precomputing of item embeddings.
+- **Visual + Textual Representation**: CLIP embeddings effectively encode both modalities.
+- **Fast Retrieval**: Once item tower outputs are cached, recommendations become extremely fast.
 
 It also supports **online retrieval** by indexing the item tower outputs and comparing with real-time user tower outputs.
 
