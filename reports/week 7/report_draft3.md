@@ -36,15 +36,21 @@ Cold-start issues in recommendation systems lead to poor user experience, making
 For collaborative filtering, we aim to predict missing user-item interactions through three main approaches:
 
 1. **User-Based CF:**
-$$\hat{r}_{ui} = \frac{\sum_{v \in N_k(u)} \text{sim}(u,v) \cdot r_{vi}}{\sum_{v \in N_k(u)} \text{sim}(u,v)}$$
+$$
+\hat{r}_{ui} = \frac{\sum_{v \in N_k(u)} sim(u,v) \cdot r_{vi}}{\sum_{v \in N_k(u)} sim(u,v)}
+$$
 where $\hat{r}_{ui}$ is the predicted rating for user u on item i, $N_k(u)$ is the set of k most similar users to u, and sim(u,v) is the cosine similarity between users.
 
 2. **Item-Based CF:**
-$ \hat{r}_{ui} = \frac{\sum_{j \in N_k(i)} sim(i,j) \cdot r_{uj}}{\sum_{j \in N_k(i)} sim(i,j)} $
+$$
+\hat{r}_{ui} = \frac{\sum_{j \in N_k(i)} sim(i,j) \cdot r_{uj}}{\sum_{j \in N_k(i)} sim(i,j)}
+$$
 where $N_k(i)$ is the set of k most similar items to i.
 
 3. **Neural CF:**
-$ \hat{r}_{ui} = f(W_2 \cdot ReLU(W_1 \cdot [e_u; e_i] + b_1) + b_2) $
+$$
+\hat{r}_{ui} = f(W_2 \cdot ReLU(W_1 \cdot [e_u; e_i] + b_1) + b_2)
+$$
 where $e_u$ and $e_i$ are user and item embeddings, and $W_1$, $W_2$, $b_1$, $b_2$ are learned parameters.
 
 
@@ -150,6 +156,8 @@ $$
 2. **Diversity Constraint:** Optional constraint to limit similar items in recommendations.
 3. **Resource Constraint:** Limited memory and computational resources.
 
+. . . . . . . . . . . . . . . . . . . .
+
 #### Algorithm/Approach Choice and Justification
 ##### Approach: Content-Based Filtering with CLIP Embeddings
 We use CLIP (Contrastive Language-Image Pretraining) to encode both item text descriptions and images into a shared feature space. By relying on item content rather than user interaction history, we address the cold-start problem effectively.
@@ -158,6 +166,8 @@ We use CLIP (Contrastive Language-Image Pretraining) to encode both item text de
 - **Rich Representations:** CLIP embeddings capture semantic meaning from both text and images.
 - **No User History Required:** Suitable for cold-start scenarios.
 - **Efficient Similarity Computation:** Cosine similarity is fast and efficient.
+
+. . . . . . . . . . . . . . . . . . . .
 
 #### PyTorch Implementation Strategy
 1. **Model and Preprocessing**:
@@ -178,6 +188,8 @@ We use CLIP (Contrastive Language-Image Pretraining) to encode both item text de
 - Rank items by similarity scores.
 - Exclude items the user has already interacted with.
 
+. . . . . . . . . . . . . . . . . . . .
+
 #### Validation Methods
 1. **Offline Evaluation:**
 - **Metrics:** Precision, Recall, F1-score, Mean Average Precision (MAP), and NDCG.
@@ -190,6 +202,8 @@ We use CLIP (Contrastive Language-Image Pretraining) to encode both item text de
 3. **Qualitative Evaluation:**
 - Visual inspection of recommendations.
 - User feedback sessions.
+
+. . . . . . . . . . . . . . . . . . . .
 
 #### Resource Requirements and Constraints
 1. **Hardware:**
@@ -215,7 +229,7 @@ We use CLIP (Contrastive Language-Image Pretraining) to encode both item text de
 
 #### Mathematical Formulation
 
-Given a user-item rating matrix $ R \in \mathbb{R}^{m \times n} $, we aim to find two low-rank matrices $ U \in \mathbb{R}^{m \times k} $ and $ V \in \mathbb{R}^{n \times k} $ such that:
+Given a user-item rating matrix $R \in \mathbb{R}^{m \times n}$, we aim to find two low-rank matrices $U \in \mathbb{R}^{m \times k}$ and $V \in \mathbb{R}^{n \times k}$ such that:
 
 $$
 \hat{R} = U V^T
@@ -228,15 +242,16 @@ $$
 $$
 
 Where:
-- $ \Omega $ is the set of observed ratings
-- $ \lambda $ is a regularization hyperparameter to prevent overfitting
-- $ \|\cdot\|_F $ is the Frobenius norm
+- $\Omega$ is the set of observed ratings
+- $\lambda$ is a regularization hyperparameter to prevent overfitting
+- $\|\cdot\|_F$ is the Frobenius norm
 
 ##### Constraints
-- **Rank Constraint**: Matrices $ U, V $ have dimension $ k \ll m, n $
+- **Rank Constraint**: Matrices $U, V$ have dimension $k \ll m, n$
 - **Cold-Start**: Performance drops for unseen users/items
 - **Data Sparsity**: Requires regularization and robust loss functions
 
+. . . . . . . . . . . . . . . . . . . .
 
 #### Algorithm/Approach Choice and Justification
 
@@ -251,6 +266,7 @@ We apply **low-rank matrix factorization using the Burer–Monteiro parameteriza
 - Flexible: easily incorporates side information (e.g., text/image features)
 - Compatible with binary or real-valued ratings
 
+. . . . . . . . . . . . . . . . . . . .
 
 #### PyTorch Implementation Strategy
 
@@ -273,12 +289,16 @@ We apply **low-rank matrix factorization using the Burer–Monteiro parameteriza
    - Compute $ \hat{R} $ after training
    - For each user, recommend highest predicted unrated items
 
+. . . . . . . . . . . . . . . . . . . .
+
 #### Validation Methods
 
 - **Elbow Method:** Grid search ranks and plot validation loss to find optimal $k$
 - **Offline Metrics:** RMSE and MSE on held-out test ratings
 - **Qualitative Evaluation:** Top-N recommendations visualized for users
 - **Binary Mode Testing:** Converted real-valued matrix into $ \{-1, 1\} $ labels to simulate preference learning
+
+. . . . . . . . . . . . . . . . . . . .
 
 #### Resource Requirements and Constraints
 
@@ -327,6 +347,7 @@ $$
 \mathcal{L} = \frac{1}{N} \sum_{(u,i)} (S(\tilde{Z}_u, \tilde{Z}_i) - y_{ui})^2
 $$
 
+. . . . . . . . . . . . . . . . . . . .
 
 #### Algorithm/Approach Choice and Justification
 
@@ -341,6 +362,7 @@ Instead of learning one large joint embedding space for user-item pairs, the Two
 
 It also supports **online retrieval** by indexing the item tower outputs and comparing with real-time user tower outputs.
 
+. . . . . . . . . . . . . . . . . . . .
 
 #### PyTorch Implementation Strategy
 
@@ -360,9 +382,10 @@ It also supports **online retrieval** by indexing the item tower outputs and com
    - Optimize with Adam
 
 5. **Inference:**
-   - Precompute $ \tilde{Z}_i $ for all items
-   - For each user, compute $ \tilde{Z}_u $ and recommend most similar items
+   - Precompute $\tilde{Z}_i$ for all items
+   - For each user, compute $\tilde{Z}_u$ and recommend most similar items
 
+. . . . . . . . . . . . . . . . . . . .
 
 #### Validation Methods
 
@@ -372,6 +395,7 @@ Mean Average Precision at K (MAP@K) extends this concept by incorporating rankin
 
 The qualitative validation of recommendations is also performed by visually inspecting the results. The first image shows personalized recommendations for multiple users, displaying the top five suggested items along with their images and descriptions. The recommendations appear diverse and relevant to user preferences, suggesting that the model effectively learns item relationships.
 
+. . . . . . . . . . . . . . . . . . . .
 
 #### Resource Requirements and Constraints
 
@@ -381,6 +405,7 @@ Memory requirements increase with dataset size, especially when storing high-dim
 
 While the current implementation is effective for smaller-scale testing, a real-world deployment would require additional optimizations such as efficient indexing, batch processing, and caching of frequently accessed embeddings.
 
+. . . . . . . . . . . . . . . . . . . .
 
 #### Conclusion
 
@@ -407,6 +432,7 @@ We successfully implemented and tested four different approaches:
 
 All models were tested with synthetic and real-world scenarios and produced distinct, reasonable recommendations per user.
 
+. . . . . . . . . . . . . . . . . . . .
 
 ### Basic Performance Metrics
 
@@ -431,6 +457,7 @@ All models were tested with synthetic and real-world scenarios and produced dist
   - NDCG@5: **0.76**  
   - t-SNE plot confirms embedding separation 
 
+. . . . . . . . . . . . . . . . . . . .
 
 ### Test Case Results
 
@@ -442,7 +469,7 @@ All models were tested with synthetic and real-world scenarios and produced dist
 
 - **Two-Tower Model**: Produced the most coherent style clustering per user. Vivian received clean, muted tones and skirts from Uniqlo and Lewkin, while Laura was served fitted sweaters and statement dresses. The Two-Tower model captured high-level semantic patterns and generalized well across users and item categories.
 
----
+. . . . . . . . . . . . . . . . . . . .
 
 ### Current Limitations
 
@@ -454,6 +481,7 @@ All models were tested with synthetic and real-world scenarios and produced dist
 
 - **Two-Tower Model**: Suffers from embedding drift if CLIP updates aren't locked; batch normalization was key to stabilizing convergence.
 
+. . . . . . . . . . . . . . . . . . . .
 
 ### Resource Usage Measurements
 
@@ -465,6 +493,7 @@ All models were tested with synthetic and real-world scenarios and produced dist
 
 - **Two-Tower Model**: Required ~7GB GPU memory for training 5 epochs on a batch size of 32. Item embeddings were precomputed, which sped up inference. CLIP usage and dual-tower architecture increased compute demand during training.
 
+. . . . . . . . . . . . . . . . . . . .
 
 ### Unexpected Challenges
 
@@ -499,6 +528,7 @@ All models were tested with synthetic and real-world scenarios and produced dist
   - Evaluate trade-offs in accuracy, scalability, and interpretability.  
   - Narrow down to 1–2 models (e.g., Two-Tower + Content-Based) that best match our application goals.
 
+. . . . . . . . . . . . . . . . . . . .
 
 ### Technical Challenges to Address
 
@@ -506,6 +536,7 @@ All models were tested with synthetic and real-world scenarios and produced dist
 - **Data Heterogeneity**: Harmonize metadata and formats across platforms (e.g., Zara vs. Uniqlo).  
 - **Real-Time Inference**: Reduce latency for browser-based personalization and dynamic ranking.
 
+. . . . . . . . . . . . . . . . . . . .
 
 ### Research Questions
 
@@ -513,6 +544,7 @@ All models were tested with synthetic and real-world scenarios and produced dist
 - **User Feedback Loops**: What’s the best way to incorporate post-recommendation feedback (implicit or explicit)?  
 - **Privacy and Compliance**: What are the guardrails for cross-site scraping and usage under evolving data policies?
 
+. . . . . . . . . . . . . . . . . . . .
 
 ### Alternative Approaches to Explore
 
@@ -520,6 +552,7 @@ All models were tested with synthetic and real-world scenarios and produced dist
 - **Active Learning Pipelines**: Use human-labeled preferences or curated clusters to guide model refinement.  
 - **Reinforcement Learning**: Adapt recommendations in real-time using clickstream or purchase behavior.
 
+. . . . . . . . . . . . . . . . . . . .
 
 ### Lessons Learned
 
