@@ -28,6 +28,7 @@ Cold-start issues in recommendation systems lead to poor user experience, making
 ---
 
 ## Technical Approach
+
 ### Collaborative Filtering
 
 #### Mathematical Formulation
@@ -35,27 +36,29 @@ Cold-start issues in recommendation systems lead to poor user experience, making
 For collaborative filtering, we aim to predict missing user-item interactions through three main approaches:
 
 1. **User-Based CF:**
-\[
+$$
 \hat{r}_{ui} = \frac{\sum_{v \in N_k(u)} sim(u,v) \cdot r_{vi}}{\sum_{v \in N_k(u)} sim(u,v)}
-\]
+$$
 where $\hat{r}_{ui}$ is the predicted rating for user u on item i, $N_k(u)$ is the set of k most similar users to u, and sim(u,v) is the cosine similarity between users.
 
 2. **Item-Based CF:**
-\[
+$$
 \hat{r}_{ui} = \frac{\sum_{j \in N_k(i)} sim(i,j) \cdot r_{uj}}{\sum_{j \in N_k(i)} sim(i,j)}
-\]
+$$
 where $N_k(i)$ is the set of k most similar items to i.
 
 3. **Neural CF:**
-\[
+$$
 \hat{r}_{ui} = f(W_2 \cdot ReLU(W_1 \cdot [e_u; e_i] + b_1) + b_2)
-\]
+$$
 where $e_u$ and $e_i$ are user and item embeddings, and $W_1$, $W_2$, $b_1$, $b_2$ are learned parameters.
 
 
 ##### Constraints:
 1. **Cold-Start:** Limited effectiveness for new users/items
 2. **Scalability:** Computation grows with user/item count
+
+. . . . . . . . . . . . . . . . . . . .
 
 #### Algorithm/Approach Choice and Justification
 We implemented three complementary collaborative filtering approaches:
@@ -80,6 +83,8 @@ We implemented three complementary collaborative filtering approaches:
 - Each method compensates for others' weaknesses
 - Neural CF adds non-linear modeling capability
 
+. . . . . . . . . . . . . . . . . . . .
+
 #### PyTorch Implementation Strategy
 
 1. **Extract Vectors:** Build user-item interaction matrix from dataset and convert to tensor format.
@@ -89,6 +94,8 @@ We implemented three complementary collaborative filtering approaches:
 5. **Recommendation:** Sort predicted scores and recommend the top-ranked items to the user.
 
 For efficiency, batch operations were implemented using PyTorch tensors. Cosine similarities and predictions were computed on the fly using sparse matrix multiplication.
+
+. . . . . . . . . . . . . . . . . . . .
 
 #### Validation Methods
 1. **Offline Evaluation:**
@@ -105,9 +112,11 @@ For efficiency, batch operations were implemented using PyTorch tensors. Cosine 
 - Compare performance across all three approaches
 - Analyze strengths/weaknesses for different user segments
 
+. . . . . . . . . . . . . . . . . . . .
+
 #### Resource Requirements and Constraints
 1. **Computational Resources:**
-- Memory: O(|U| × |I|) for similarity matrices
+- Memory: $O(|U| \times |I|)$ for similarity matrices
 - CPU: Significant for large-scale similarity computations
 - GPU: Required for efficient Neural CF training
 
@@ -117,9 +126,9 @@ For efficiency, batch operations were implemented using PyTorch tensors. Cosine 
 - Model parameters
 
 3. **Scalability Considerations:**
-- User-based CF: O(|U|²) similarity computations
-- Item-based CF: O(|I|²) similarity computations
-- Neural CF: O(batch_size × embedding_dim)
+- User-based CF: $O(|U|^2)$ similarity computations
+- Item-based CF: $O(|I|^2)$ similarity computations
+- Neural CF: $O$(batch_size × embedding_dim)
 
 4. **Performance Constraints:**
 - Real-time recommendation latency
