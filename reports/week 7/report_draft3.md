@@ -36,7 +36,7 @@ Cold-start issues in recommendation systems lead to poor user experience, making
 For collaborative filtering, we aim to predict missing user-item interactions through three main approaches:
 
 1. **User-Based CF:**
-$ \hat{r}_{ui} = \frac{\sum_{v \in N_k(u)} sim(u,v) \cdot r_{vi}}{\sum_{v \in N_k(u)} sim(u,v)} $
+$\hat{r}_{ui} = \frac{\sum_{v \in N_k(u)} sim(u,v) \cdot r_{vi}}{\sum_{v \in N_k(u)} sim(u,v)}$
 where $\hat{r}_{ui}$ is the predicted rating for user u on item i, $N_k(u)$ is the set of k most similar users to u, and sim(u,v) is the cosine similarity between users.
 
 2. **Item-Based CF:**
@@ -52,8 +52,7 @@ where $e_u$ and $e_i$ are user and item embeddings, and $W_1$, $W_2$, $b_1$, $b_
 1. **Cold-Start:** Limited effectiveness for new users/items
 2. **Scalability:** Computation grows with user/item count
 
-<hr style="border-top: 1px dotted #bbb;" />
-
+. . . . . . . . . . . . . . . . . . . .
 
 #### Algorithm/Approach Choice and Justification
 We implemented three complementary collaborative filtering approaches:
