@@ -28,6 +28,10 @@ Cold-start issues in recommendation systems lead to poor user experience, making
 ---
 
 ## Technical Approach
+### Dataset Augmentation
+To expand our dataset with real-world product images and metadata, we initially explored direct web scraping using Python tools such as requests, BeautifulSoup, and Selenium. However, most modern e-commerce websites employ aggressive anti-scraping measures (e.g., dynamic content loading, CAPTCHA walls, rate-limiting, header checking), which rendered many scraping attempts ineffective—even when combining code snippets from multiple sources and LLMs like ChatGPT, Claude, and DeepSeek.
+
+We pivoted to an alternative strategy: sourcing existing datasets with direct image URLs. By using Pandas and requests, we were able to write a Python script that efficiently downloaded images in batch from these URLs, bypassing the need for full-page scraping. We augmented our dataset using the ASOS Women’s Clothing dataset (≈5000 images) and the Myntra Men’s dataset (≈1200 images), linking each image with its corresponding product title, description, and price. The process also involved cleaning malformed image fields (e.g., JSON-like strings or comma-separated lists) and normalizing URL formats. This pivot proved significantly more scalable and maintainable than scraping entire product pages.
 
 ### Collaborative Filtering
 
@@ -423,6 +427,9 @@ The final loss converges quickly, and visual analysis confirms the formation of 
 
 ## Results
 
+### Dataset Augmentation
+The addition of thousands of high-quality product images across different brands and categories significantly enhanced the dataset’s richness. These images are now integrated alongside descriptions, prices, and category tags, allowing us to run content-based filtering, CLIP clustering, and hybrid models more effectively. With each item containing aligned multimodal features (image + text), the quality of content-based and two-tower recommendations noticeably improved in both cold-start and general ranking tasks. Preliminary visual inspection confirmed that user-specific styles (e.g., minimalist, formal, casual) are better captured across categories.
+
 ### Evidence Your Implementation Works
 
 We successfully implemented and tested four different approaches:
@@ -477,6 +484,8 @@ All models were tested with synthetic and real-world scenarios and produced dist
 . . . . . . . . . . . . . . . . . . . .
 
 ### Current Limitations
+- **Dataset Augmentation**:
+Despite successfully augmenting the dataset, the image acquisition pipeline introduces significant runtime overhead. Downloading and converting thousands of images from URLs, even with optimized batching and headers, takes substantial time in Colab. Additionally, while we avoid scraping raw HTML pages, some image URL fields are inconsistently formatted, requiring ad hoc parsing logic. Storage and memory management also become bottlenecks when working with large quantities of high-resolution images. Finally, while our pivot eliminated the need for scraping dynamic pages, we are still constrained by the limited availability of men's clothing datasets with high-quality metadata.
 
 - **Collaborative Filtering**: Still underperforms for users with zero or near-zero historical ratings.
 
@@ -489,6 +498,14 @@ All models were tested with synthetic and real-world scenarios and produced dist
 . . . . . . . . . . . . . . . . . . . .
 
 ### Resource Usage Measurements
+**Dataset Augmentation**:
+The image augmentation phase is now the most time-intensive step in our Colab workflows. For instance:
+
+- Downloading and saving ~5000 .avif → .png images from the ASOS Women’s dataset took 17 minutes in Colab.
+- A similar process for the Myntra Men’s dataset (~1200 items) took 23 minutes, likely due to slower server response times and more complex URL parsing.
+- These durations do not include the time taken to upload images to a shared Google Drive, which we’ve adopted as our centralized image storage (in place of GitHub).
+- Uploading to Drive has consumed ~2GB of space so far, and upload latency can be significant depending on network and file chunking.
+This image preprocessing workload consumes a large portion of runtime and will need to be parallelized or distributed if the dataset continues to grow.
 
 - **Collaborative Filtering**: Memory-efficient for small datasets (~2GB RAM); similarity matrix computation and ranking took ~4–5 minutes for 40+ users and 60+ items. No GPU required.
 
@@ -501,6 +518,7 @@ All models were tested with synthetic and real-world scenarios and produced dist
 . . . . . . . . . . . . . . . . . . . .
 
 ### Unexpected Challenges
+- **Dataset Augmentation**: Many initial scraping strategies failed due to client-side rendering and anti-bot protections on retail sites. Even when Selenium successfully rendered pages in local environments, deploying in Colab led to ChromeDriver mismatches and Snap-related install issues. Moreover, relying on LLM-generated scraping code proved brittle—many prompts yielded outdated or generic solutions that didn’t account for dynamic page structures. The eventual shift to downloading images directly from CSV/JSON datasets required us to manually clean and restructure raw image fields that were inconsistently formatted (e.g., stringified dictionaries, comma-separated URLs, JSON-like arrays). While more manageable, this still introduced complexity in data wrangling and validation.
 
 - **Collaborative Filtering**: Encountered sparse matrix issues (e.g., division-by-zero) due to missing ratings. Also saw instability in cosine similarity ranking for edge users with few co-rated items.
 
@@ -517,17 +535,16 @@ All models were tested with synthetic and real-world scenarios and produced dist
 
 ### Immediate Improvements
 
-- **Continuously expand our dataset**: Add more users and clothing items to increase model robustness and diversity in recommendations.  
-  - Develop an automated scraping pipeline to collect images and metadata from retail sites.  
-  - Generate synthetic user profiles and rating histories to simulate realistic behavior.
+- **Dataset Augmentation**:
+  - Streamline image ingestion pipelines: Implement multi-threaded or batched downloading to reduce total time spent on image collection and format conversion.
+  - Automate dataset cleanup: Standardize image URL fields and enforce quality checks on metadata (e.g., non-empty titles, valid price formats).
+  - Compress and archive historical images: Periodically zip and offload older datasets to prevent exceeding Colab and Drive storage limits.
+  - Maintain dataset index files: Link each image to its metadata and store mapping files in a standardized schema (image_key, title, price, description) to enable plug-and-play integration with models.
+  - Evaluate Drive as a long-term image store: Consider cloud buckets (e.g., S3, GCS) if the dataset grows beyond what Google Drive can sustainably manage for multi-user access.
 
 - **Improve image preprocessing and embeddings**:  
   - Standardize lighting, angles, and resolution across product photos.  
   - Fine-tune embedding quality using domain-specific augmentations (e.g., garment textures, folds).
-
-- **Optimize clustering for unsupervised analysis**:  
-  - Refine HDBSCAN parameters and similarity metrics.  
-  - Explore embedding dimensionality reduction to improve interpretability and grouping accuracy.
 
 - **Benchmark and consolidate models**:  
   - Evaluate trade-offs in accuracy, scalability, and interpretability.  
