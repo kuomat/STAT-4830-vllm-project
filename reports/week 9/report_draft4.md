@@ -33,6 +33,8 @@ To expand our dataset with real-world product images and metadata, we initially 
 
 We pivoted to an alternative strategy: sourcing existing datasets with direct image URLs. By using Pandas and requests, we were able to write a Python script that efficiently downloaded images in batch from these URLs, bypassing the need for full-page scraping. We augmented our dataset using the ASOS Women’s Clothing dataset (≈5000 images) and the Myntra Men’s dataset (≈1200 images), linking each image with its corresponding product title, description, and price. The process also involved cleaning malformed image fields (e.g., JSON-like strings or comma-separated lists) and normalizing URL formats. This pivot proved significantly more scalable and maintainable than scraping entire product pages.
 
+To evaluate our recommendation models on the newly augmented dataset, we generated a synthetic user-item interaction matrix based on the ASOS and Myntra datasets. Given the absence of real user behavior data, we simulated a sparse rating matrix by assigning implicit interaction scores (e.g., ratings between 1–5) to a subset of items per user. These interactions were sampled based on product categories, price ranges, and embedding similarities to emulate diverse user preferences. For instance, a user with an affinity for minimal, neutral-toned items might be assigned higher scores to similar products clustered in CLIP embedding space. 
+
 ### Collaborative Filtering
 
 #### Mathematical Formulation
