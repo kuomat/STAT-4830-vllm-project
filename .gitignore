@@ -3,4 +3,9 @@ docs/figures/*
 !docs/figures/*.png
 !docs/figures/*.tex
 
+*.png
+*.csv
+*.pkl
+*.xlsx
+
 local/
