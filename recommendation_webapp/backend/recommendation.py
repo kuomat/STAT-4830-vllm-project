@@ -241,7 +241,7 @@ def get_best_projection() -> torch.nn.Module:
 
 def low_rank_recommend(user_ratings: dict[int, int], k=10) -> list[int]:
     global PROJECTION
-    
+
     if PROJECTION is None:
         PROJECTION = get_best_projection()
 
@@ -285,11 +285,11 @@ class TwoTowerModel(nn.Module):
 
         # Projection layers to transform original embeddings
         self.user_tower = nn.Sequential(
-            nn.Linear(2517, 128),
+            nn.Linear(2519, 128),
             nn.ReLU()
         )
         self.item_tower = nn.Sequential(
-            nn.Linear(embedding_dim, 128),
+            nn.Linear(1024, 128),
             nn.ReLU()
         )
 
@@ -314,7 +314,7 @@ class TwoTowerModel(nn.Module):
 
         rating = self.rating_predictor(similarity)
         return rating.squeeze(-1)
-    
+
 MODEL = TwoTowerModel(embedding_dim=TEXT_EMB_MATRIX.shape[1])
 MODEL.load_state_dict(torch.load(
     os.path.join(BASE, "data", "two_tower_model_params.pth"),
