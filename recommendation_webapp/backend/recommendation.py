@@ -328,13 +328,11 @@ def two_tower_recommend(user_ratings: dict[int,int], k: int = 10) -> list[int]:
     if not idxs:
         return []
 
-    user_texts = torch.tensor(TEXT_EMB_MATRIX[idxs])      # (n_sel, D)
-    user_avg   = user_texts.mean(dim=0, keepdim=True)     # (1, D)
+    user_emb = torch.tensor([+1 if i in user_ratings else -1 for i in range(2519)]).reshape(1, 2519).type(torch.float32)
+    item_imgs = torch.tensor(EMB_LIST)  # (2519, 1024)
 
-    # 2) score every item via the item tower
-    item_imgs = torch.tensor(IMG_EMB_MATRIX)              # (n_items, D)
     with torch.no_grad():
-        scores = MODEL(user_avg.repeat(len(ITEM_KEYS), 1), item_imgs)
+        scores = MODEL(user_emb, item_imgs)
     scores = scores.numpy()
 
     # 3) exclude anything the user already picked

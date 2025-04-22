@@ -21,7 +21,7 @@ async def recommend(method: str, req: Req):
             recs = collaborative_filtering_recommend(user_map, req.n)
         elif method == 'low-rank':
             recs = low_rank_recommend(user_map, req.n)
-        elif method == 'two‑tower':                      
+        elif method == 'two-tower':
             recs = two_tower_recommend(user_map, req.n)
 
         else:
