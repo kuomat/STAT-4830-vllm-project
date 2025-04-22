@@ -6,6 +6,42 @@ export default function ResultsPage({ selectedIds, recommendations }) {
   const navigate = useNavigate();
   const algoKeys = Object.keys(recommendations);
   const [currentAlgo, setCurrentAlgo] = useState(algoKeys[0] || '');
+  // const [items, setItems] = useState([]);
+
+  // useEffect(() => {
+  //   fetch('/api/items')
+  //     .then(res => res.json())
+  //     .then(setItems)
+  //     .catch(console.error);
+  // }, []);
+
+  // useEffect(() => {
+  //   if (algoKeys.length) setCurrentAlgo(algoKeys[0]);
+  // }, [recommendations]);
+
+  // const idToItem = Object.fromEntries(items.map(item => [String(item.id), item]));
+
+  // const renderGrid = (ids, columns) => (
+  //   <div
+  //     style={{
+  //       display: 'grid',
+  //       gridTemplateColumns: `repeat(${columns}, 1fr)`,
+  //       gap: 8,
+  //     }}
+  //   >
+  //     {ids.map((id) => {
+  //       const item = idToItem[String(id)];
+  //       return item ? (
+  //         <img
+  //           key={id}
+  //           src={item.image_url}
+  //           alt={item.title || id}
+  //           style={{ width: '100%', objectFit: 'cover', borderRadius: 4 }}
+  //         />
+  //       ) : null;
+  //     })}
+  //   </div>
+  // );
 
   // if recommendations change (e.g. when you add more methods), reset dropdown
   useEffect(() => {
@@ -31,6 +67,7 @@ export default function ResultsPage({ selectedIds, recommendations }) {
       ))}
     </div>
   );
+
 
   return (
     <div style={{ padding: 16, textAlign: 'center' }}>

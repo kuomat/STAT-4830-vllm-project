@@ -11,7 +11,7 @@ function App() {
 
   const onSubmit = async (ids, n = 10) => {
     setSelectedIds(ids);
-    const methods = ['content-filtering']; // add your other methods later
+    const methods = ['content-filtering', 'collaborative-filtering', 'low-rank']; // add your other methods later
     const results = await Promise.all(
       methods.map(m =>
         fetch(`/api/recommend/${m}`, {
@@ -21,6 +21,7 @@ function App() {
         }).then(r => r.json())
       )
     );
+
     const recs = {};
     methods.forEach((m, i) => recs[m] = results[i].recommendations);
     setRecommendations(recs);

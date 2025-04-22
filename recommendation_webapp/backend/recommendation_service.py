@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI
 from pydantic import BaseModel
-from recommendation import content_filtering_recommend
+from recommendation import content_filtering_recommend, collaborative_filtering_recommend, low_rank_recommend
 
 class Req(BaseModel):
     selected: list[int]    # note: we use ints here
@@ -12,11 +12,21 @@ app = FastAPI()
 
 @app.post("/recommend/{method}")
 async def recommend(method: str, req: Req):
-    if method != 'content-filtering':
-        return {"error": "only 'content-filtering' implemented"}, 400
+    try:
+        user_map = {k: +1 for k in req.selected}
 
-    # build dict of image_key -> +1/-1 from the list of selected keys
-    # here you might encode selection=+1, unselected=-1 as per your logic
-    user_map = {k: +1 for k in req.selected}
-    recs = content_filtering_recommend(user_map, req.n)
-    return {"recommendations": recs}
+        if method == 'content-filtering':
+            recs = content_filtering_recommend(user_map, req.n)
+        elif method == 'collaborative-filtering':
+            recs = collaborative_filtering_recommend(user_map, req.n)
+        elif method == 'low-rank':
+            recs = low_rank_recommend(user_map, req.n)
+        else:
+            return {"error": f"unsupported method: {method}"}, 400
+
+        return {"recommendations": recs}
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return {"error": f"Recommendation service error: {str(e)}"}, 500
