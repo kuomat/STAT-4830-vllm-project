@@ -6,6 +6,10 @@ import ast
 import numpy as np
 import torch
 from functools import lru_cache
+import torch.nn.functional as F
+import torch.nn as nn
+
+from sklearn.metrics.pairwise import cosine_similarity
 
 # 1) Load your CSV
 BASE = os.path.dirname(__file__)
@@ -13,6 +17,8 @@ CSV_PATH = os.path.join(BASE, 'data', 'embeddings_final.csv')
 
 ITEM_KEYS = []
 EMB_LIST = []
+TEXT_EMB_LIST = []
+IMG_EMB_LIST  = []
 
 with open(CSV_PATH, newline='', encoding='utf-8') as f:
     reader = csv.DictReader(f)
@@ -26,10 +32,16 @@ with open(CSV_PATH, newline='', encoding='utf-8') as f:
             continue
         ITEM_KEYS.append(key)
         EMB_LIST.append(txt + img)
+        TEXT_EMB_LIST.append(txt)
+        IMG_EMB_LIST.append(img)
+
 
 # 2) Build NumPy embedding matrix of shape (n_items, dim)
 EMB_MATRIX = np.array(EMB_LIST, dtype=float)
 FEATURES = np.array(EMB_MATRIX, dtype=np.float32) # shape: (n_items=2519, dim=1024)
+TEXT_EMB_MATRIX = np.array(TEXT_EMB_LIST, dtype=np.float32)  # shape (n_items, D)
+IMG_EMB_MATRIX  = np.array(IMG_EMB_LIST,  dtype=np.float32)
+KEY_TO_IDX      = {k:i for i,k in enumerate(ITEM_KEYS)}
 
 # 3) Manually compute cosine‐similarity matrix
 #    sim[i,j] = (v_i · v_j) / (||v_i|| * ||v_j||)
@@ -265,3 +277,71 @@ def low_rank_recommend(user_ratings: dict[int, int], k=10) -> list[int]:
 
     top_indices = np.argsort(scores)[-k:][::-1]
     return [ITEM_KEYS[i] for i in top_indices]
+
+
+class TwoTowerModel(nn.Module):
+    def __init__(self, embedding_dim=512, hidden_dim=64):
+        super(TwoTowerModel, self).__init__()
+
+        # Projection layers to transform original embeddings
+        self.user_tower = nn.Sequential(
+            nn.Linear(2517, 128),
+            nn.ReLU()
+        )
+        self.item_tower = nn.Sequential(
+            nn.Linear(embedding_dim, 128),
+            nn.ReLU()
+        )
+
+        # Map similarity score to rating
+        self.rating_predictor = nn.Sequential(
+            nn.Linear(1, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, hidden_dim//2),
+            nn.ReLU(),
+            nn.Linear(hidden_dim//2, 1)
+        )
+
+    def forward(self, user_emb, item_emb):
+        # Get embeddings from towers
+        user_repr = self.user_tower(user_emb)
+        item_repr = self.item_tower(item_emb)
+
+        # Compute cosine similarity
+        user_repr = F.normalize(user_repr, p=2, dim=1)
+        item_repr = F.normalize(item_repr, p=2, dim=1)
+        similarity = torch.sum(user_repr * item_repr, dim=1, keepdim=True)
+
+        rating = self.rating_predictor(similarity)
+        return rating.squeeze(-1)
+    
+MODEL = TwoTowerModel(embedding_dim=TEXT_EMB_MATRIX.shape[1])
+MODEL.load_state_dict(torch.load(
+    os.path.join(BASE, "data", "two_tower_model_params.pth"),
+    map_location="cpu"
+))
+MODEL.eval()
+
+def two_tower_recommend(user_ratings: dict[int,int], k: int = 10) -> list[int]:
+    # 1) build a single “user vector” by averaging text‐embs of items they selected
+    idxs = [KEY_TO_IDX[k] for k in user_ratings if k in KEY_TO_IDX]
+    if not idxs:
+        return []
+
+    user_texts = torch.tensor(TEXT_EMB_MATRIX[idxs])      # (n_sel, D)
+    user_avg   = user_texts.mean(dim=0, keepdim=True)     # (1, D)
+
+    # 2) score every item via the item tower
+    item_imgs = torch.tensor(IMG_EMB_MATRIX)              # (n_items, D)
+    with torch.no_grad():
+        scores = MODEL(user_avg.repeat(len(ITEM_KEYS), 1), item_imgs)
+    scores = scores.numpy()
+
+    # 3) exclude anything the user already picked
+    for key in user_ratings:
+        if key in KEY_TO_IDX:
+            scores[KEY_TO_IDX[key]] = -np.inf
+
+    # 4) take top-k
+    top_idxs = np.argsort(scores)[::-1][:k]
+    return [ITEM_KEYS[i] for i in top_idxs]

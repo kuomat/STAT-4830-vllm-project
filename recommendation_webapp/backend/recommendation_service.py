@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI
 from pydantic import BaseModel
-from recommendation import content_filtering_recommend, collaborative_filtering_recommend, low_rank_recommend
+from recommendation import content_filtering_recommend, collaborative_filtering_recommend, low_rank_recommend, two_tower_recommend
 
 class Req(BaseModel):
     selected: list[int]    # note: we use ints here
@@ -21,6 +21,9 @@ async def recommend(method: str, req: Req):
             recs = collaborative_filtering_recommend(user_map, req.n)
         elif method == 'low-rank':
             recs = low_rank_recommend(user_map, req.n)
+        elif method == 'two‑tower':                      
+            recs = two_tower_recommend(user_map, req.n)
+
         else:
             return {"error": f"unsupported method: {method}"}, 400
 
