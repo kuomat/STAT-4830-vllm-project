@@ -6,11 +6,27 @@ export default function ResultsPage({ selectedIds, recommendations }) {
   const navigate = useNavigate();
   const algoKeys = Object.keys(recommendations);
   const [currentAlgo, setCurrentAlgo] = useState(algoKeys[0] || '');
+  const [itemsMap, setItemsMap] = useState({});
+  const [modalItem, setModalItem] = useState(null);
 
   // if recommendations change (e.g. when you add more methods), reset dropdown
   useEffect(() => {
     if (algoKeys.length) setCurrentAlgo(algoKeys[0]);
   }, [recommendations]);
+
+  useEffect(() => {
+    fetch('/api/items')
+      .then(r => r.json())
+      .then(data => {
+        const map = {};
+        data.forEach(item => {
+          map[item.id] = item;
+        });
+        setItemsMap(map);
+      })
+      .catch(console.error);
+  }, []);
+
 
   // generic grid renderer with dynamic columns
   const renderGrid = (ids, columns) => (
@@ -21,14 +37,22 @@ export default function ResultsPage({ selectedIds, recommendations }) {
         gap: 8,
       }}
     >
-      {ids.map((id) => (
-        <img
+    {ids.map(id => {
+      const item = itemsMap[id];
+      return (
+        <div
           key={id}
-          src={`/images/${id}.png`}
-          alt={id}
-          style={{ width: '100%', objectFit: 'cover' }}
-        />
-      ))}
+          onClick={() => item && setModalItem(item)}
+          style={{ cursor: 'pointer' }}
+        >
+          <img
+            src={`/images/${id}.png`}
+            alt={item?.name || id}
+            style={{ width: '100%', objectFit: 'cover' }}
+          />
+        </div>
+      );
+    })}
     </div>
   );
 
@@ -82,6 +106,50 @@ export default function ResultsPage({ selectedIds, recommendations }) {
           }
         </div>
       )}
+
+      {modalItem && (
+              <div
+                style={{
+                  position: 'fixed',
+                  top: 0, left: 0, right: 0, bottom: 0,
+                  background: 'rgba(0,0,0,0.6)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 1000,
+                }}
+                onClick={() => setModalItem(null)}
+              >
+                <div
+                  onClick={e => e.stopPropagation()}
+                  style={{
+                    background: '#fff',
+                    padding: 24,
+                    borderRadius: 8,
+                    maxWidth: 400,
+                    textAlign: 'left',
+                  }}
+                >
+                  <h2>{modalItem.name}</h2>
+                  <p><strong>${modalItem.price.toFixed(2)}</strong></p>
+                  <p style={{ whiteSpace: 'pre-wrap', maxHeight: '60vh', overflowY: 'auto' }}>
+                    {modalItem.description}
+                  </p>
+                  <button onClick={() => setModalItem(null)} style={{ marginTop: 16 }}>
+                    Close
+                  </button>
+                </div>
+              </div>
+            )}
+
+
+
+
+
+
+
+
+
     </div>
   );
 }
