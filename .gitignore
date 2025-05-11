@@ -8,4 +8,5 @@ docs/figures/*
 *.pkl
 *.xlsx
 
+.env
 local/
