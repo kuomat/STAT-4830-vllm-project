@@ -68,20 +68,44 @@ We implemented and evaluated four distinct recommendation strategies, supported 
 ---
 
 # Setup Instructions
-## 1. Python Environment(s)
+## 1. Data Setup
+Before running the notebook or webapp, you’ll need to download the following files from our shared Google Drive folder:
+🔗 [Google Drive - Project Data](https://drive.google.com/drive/folders/1T5zKf19Bsi7bKvqYaohdbtKhF2OS8inl?usp=sharing)
+
+### Files to Download:
+1. `images.zip` — contains all product images
+2. `embeddings_final.csv` — image and text CLIP embeddings per item
+3. `sparse_ratings_matrix.csv` — synthetic user-item ratings matrix
+
+Once downloaded, move the following **into the `dataset/` folder** (not inside `images/`):
+- `embeddings_final.csv`
+- `sparse_ratings_matrix.csv`
+
+Structure should look like this:
+```
+dataset/
+├── embeddings_final.csv
+├── sparse_ratings_matrix.csv
+└── images/
+|   └──  0001.png
+|   └──  0002.png
+|   └── ...
+```
+
+## 2. Python Environment(s)
 
 We recommend using **two separate** virtual environments:
 
 1. **Root venv** for the evaluation notebook  
 2. **Backend venv** for the webapp_demo (FastAPI service)
 
-### 1.1 Root venv (for `evaluation.ipynb`)
+### 2.1. Root venv (for `evaluation.ipynb`)
 ```
 # from project root, do not cd yet
 python3 -m venv .venv-root
 source .venv-root/bin/activate
 ```
-### 1.2 Backend venv
+### 2.2. Backend venv
 Open a new terminal:
 ```
 cd src/webapp_demo/backend
@@ -89,8 +113,8 @@ python3 -m venv .venv-backend
 source .venv-backend/bin/activate
 ```
 
-## 2. Install Python Dependencies
-### 2.1. In .venv-root (evaluation)
+## 3. Install Python Dependencies
+### 3.1. In .venv-root (evaluation)
 Go back to the first terminal:
 ```
 # with .venv-root activated
@@ -98,7 +122,7 @@ pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
 pip install jupyter
 ```
-### 2.2. In .venv-backend (FastAPI backend)
+### 3.2. In .venv-backend (FastAPI backend)
 ```
 # from src/webapp_demo/backend, .venv-backend activated
 pip install --upgrade pip setuptools wheel
