@@ -56,89 +56,105 @@ We implemented and evaluated four distinct recommendation strategies, supported 
 ---
 
 # Setup Instructions
+## 1. Python Environment(s)
 
-1. **Environment Setup**
-   - Recommended Python version: `>=3.10`
-   - Make sure you are in the root directory (STAT-4830-VLLM-PROJECT)
-   - Install dependencies:
-     ```bash
-     python3 -m venv venv
-     source venv/bin/activate
-     pip install -r requirements.txt
-     ```
+We recommend using **two separate** virtual environments:
 
-2. **Dependencies**
-   - `torch`, `pandas`, `numpy`, `scikit-learn`
-   - `openai-clip` or `CLIP` via `torch.hub`
-   - `matplotlib`, `seaborn`
+1. **Root venv** for the evaluation notebook  
+2. **Backend venv** for the webapp_demo (FastAPI service)
 
-3. **Additional Notes**
-   - For image processing, ensure `Pillow` is installed.
-   - If using Google Colab, GPU acceleration is highly recommended (Runtime > Change runtime type > GPU).
+### 1.1 Root venv (for `evaluation.ipynb`)
+    ```bash
+    # from project root, do not cd yet
+    python3 -m venv .venv-root
+    source .venv-root/bin/activate
+    ```
+### 1.2 Backend venv
+Open a new terminal:
 
+    ```bash
+    cd src/webapp_demo/backend
+    python3 -m venv .venv-backend
+    source .venv-backend/bin/activate
+    ```
+
+## 2. Install Python Dependencies
+### 2.1. In .venv-root (evaluation)
+Go back to the first terminal:
+
+    ```bash
+    # with .venv-root activated
+    pip install --upgrade pip setuptools wheel
+    pip install -r requirements.txt
+    pip install jupyter
+    ```
+### 2.2. In .venv-backend (FastAPI backend)
+    ```bash
+    # from src/webapp_demo/backend, .venv-backend activated
+    pip install --upgrade pip setuptools wheel
+    pip install numpy pandas scipy scikit-learn torch fastapi uvicorn
+    ```
 ---
 
 # Running the Code
 
-### 1. Run 4 Models + Evaluation (`evaluation.ipynb`)
-- To evaluate all four recommendation models (Content-Based, Collaborative Filtering, Low-Rank Matrix Completion, Two-Tower), open the notebook:
+## 1. Run 4 Models + Evaluation (`evaluation.ipynb`)
+### 1.1 Activate .venv-root
     ```bash
-    jupyter notebook notebooks/evaluation.ipynb
+    source .venv-root/bin/activate
     ```
-
-### 2. Run Web App Demo
-#### Prerequisites
-
-- **Node.js & npm** (v14+)
-- **Python 3.10+** (with `venv` or `virtualenv`)
-- Internet connection to fetch NPM & PyPI packages
-
-#### 1. Backend: Python (FastAPI)
-
-1. Open a new terminal and create/activate a virtualenv:
-
+### 1.2. Launch Jupyter Lab
     ```bash
-    cd src/webapp_demo/backend
-    python3 -m venv venv
-    source venv/bin/activate
+    # make sure you are in src folder; venv-root activated
+    cd src
+    jupyter notebook evaluation.ipynb
     ```
+### 1.3. Run evaluation.ipynb
+In the notebook, run all cells. You’ll generate:
+- Precision/Recall plots
+- RMSE/MSE metrics
 
-3. Launch the FastAPI service (serves `/recommend/{method}` on port 8000):
+Press CTRL-C to quit the Jupyter Kernel. We used Jupyter instead of Google Colab as it allows us to more closely deal with our local environment (needed for our webapp). If desired, the evaluation notebook can also be run in Colab, provided that all the files are uploaded.
 
+## 2. Run Web App Demo
+### Prerequisites
+The webapp has three moving parts:
+- FastAPI (Python) on port 8000
+- Express (Node) on port 4000
+- React (frontend) on port 3000
+You can start them in any order, but make sure each one is up before you use it.
+
+### 2.1. Backend: Python (FastAPI)
     ```bash
+    # from src/webapp_demo/backend; venv-backend activated
+    source .venv-backend/bin/activate
     uvicorn recommendation_service:app --reload --port 8000
     ```
-
-#### 2. Backend: Node (Express)
-
-1. In a **second** terminal (no need to activate the Python venv here):
-
+You should see:
     ```bash
-    cd webapp_demo/backend
-    npm install
+    INFO: Uvicorn running on http://127.0.0.1:8000
     ```
 
-2. Start the Express server (serves `/api/items` and proxies to FastAPI on port 4000):
-
+### 2.2. Backend: Node (Express)
     ```bash
+    # in a new terminal (no Python venv needed here)
+    cd src/webapp_demo/backend
+    npm install
     npm start
-    # logs: "Backend listening on http://localhost:4000"
+    ```
+You should see:
+    ```bash
+    Backend listening on http://localhost:4000
     ```
 
 #### 3. Frontend: React
-
-1. In a **third** terminal:
-
     ```bash
-    cd webapp_demo/frontend
+    # in another terminal
+    cd src/webapp_demo/frontend
     npm install
-    ```
-
-2. Run the React development server on port 3000:
-
-    ```bash
     npm start
     ```
+The app will open at http://localhost:3000/. It uses the proxy in package.json to talk to the Express backend on port 4000.
 
 #### 4. Try it out
 
@@ -153,3 +169,4 @@ We implemented and evaluated four distinct recommendation strategies, supported 
 - **`invalid json response`** in Express: make sure your Express proxy in `backend/index.js` is pointing to `http://localhost:8000`, not 3000.
 - **Python ABI errors** (e.g. “numpy.dtype size changed”): recreate your venv and reinstall **both** NumPy and scikit-learn (or remove scikit-learn and use a NumPy‐only cosine‐sim).
 - **React blank page**: ensure your `src/index.js` uses the React 18 `createRoot` API and is wrapped in `BrowserRouter`.
+- Use `deactivate` to deactivate any .venv you currently have open.
