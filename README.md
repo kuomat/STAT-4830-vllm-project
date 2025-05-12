@@ -38,20 +38,32 @@ We implemented and evaluated four distinct recommendation strategies, supported 
 
 # Repository Structure Overview
 
+<pre markdown>```
+├── _archive/                # Old scripts, early experiments, exploratory notebooks
+│   ├── llm_exploration/     # LLM Logs
+│   ├── notebooks/           # Old scripts for 4 algorithms
+│   ├── report_drafts/
+│   ├── self_critique/
+│   ├── slides/
+├── dataset/                 # Folder to manually upload files from Google Drive
+│   ├── images/              # Where image pngs are stored
+│   ├── embeddings_final.csv        # Image/Text embeddings
+│   ├── sparse_ratings_matrix.csv   # User ratings matrix (synthetic)
+├── docs/
+│   ├── STAT 4830 Final Presentation.pdf
+│   ├── Final Critique.md
 ├── src/                     # Final code scripts and modules for each model
-├── evaluation.ipynb         # Interactive demo and experiment notebooks
+│   ├── evaluation.ipynb     # Interactive demo and experiment notebooks
+│   ├── utils/...            # Contains collab filtering & two tower scripts
 ├── webapp_demo/             # Web application demo
 │   ├── backend/...
 │   └── frontend/...
 |   └── .gitignore
 |   └── package-lock.json
 ├── report.md                # Final project report
-├── requirements.txt         # Python dependencies
-├── sparse_ratings_matrix.csv
-├── dataset_m.xlsx           # Metadata for items (ASOS, Myntra)
-├── content_filtering.ipynb  # Image/text embedding preprocessing
-├── _archive/                # Old scripts, early experiments, exploratory notebooks
+├── requirements.txt         # Python dependencies (for evaluation.ipynb)
 └── README.md                # Project summary and setup instructions
+```</pre>
 
 ---
 
@@ -64,7 +76,7 @@ We recommend using **two separate** virtual environments:
 2. **Backend venv** for the webapp_demo (FastAPI service)
 
 ### 1.1 Root venv (for `evaluation.ipynb`)
-    ```bash
+    ```
     # from project root, do not cd yet
     python3 -m venv .venv-root
     source .venv-root/bin/activate
@@ -72,7 +84,7 @@ We recommend using **two separate** virtual environments:
 ### 1.2 Backend venv
 Open a new terminal:
 
-    ```bash
+    ```
     cd src/webapp_demo/backend
     python3 -m venv .venv-backend
     source .venv-backend/bin/activate
@@ -82,14 +94,14 @@ Open a new terminal:
 ### 2.1. In .venv-root (evaluation)
 Go back to the first terminal:
 
-    ```bash
+    ```
     # with .venv-root activated
     pip install --upgrade pip setuptools wheel
     pip install -r requirements.txt
     pip install jupyter
     ```
 ### 2.2. In .venv-backend (FastAPI backend)
-    ```bash
+    ```
     # from src/webapp_demo/backend, .venv-backend activated
     pip install --upgrade pip setuptools wheel
     pip install numpy pandas scipy scikit-learn torch fastapi uvicorn
@@ -100,11 +112,11 @@ Go back to the first terminal:
 
 ## 1. Run 4 Models + Evaluation (`evaluation.ipynb`)
 ### 1.1 Activate .venv-root
-    ```bash
+    ```
     source .venv-root/bin/activate
     ```
 ### 1.2. Launch Jupyter Lab
-    ```bash
+    ```
     # make sure you are in src folder; venv-root activated
     cd src
     jupyter notebook evaluation.ipynb
@@ -125,30 +137,30 @@ The webapp has three moving parts:
 You can start them in any order, but make sure each one is up before you use it.
 
 ### 2.1. Backend: Python (FastAPI)
-    ```bash
+    ```
     # from src/webapp_demo/backend; venv-backend activated
     source .venv-backend/bin/activate
     uvicorn recommendation_service:app --reload --port 8000
     ```
 You should see:
-    ```bash
+    ```
     INFO: Uvicorn running on http://127.0.0.1:8000
     ```
 
 ### 2.2. Backend: Node (Express)
-    ```bash
+    ```
     # in a new terminal (no Python venv needed here)
     cd src/webapp_demo/backend
     npm install
     npm start
     ```
 You should see:
-    ```bash
+    ```
     Backend listening on http://localhost:4000
     ```
 
 #### 3. Frontend: React
-    ```bash
+    ```
     # in another terminal
     cd src/webapp_demo/frontend
     npm install
