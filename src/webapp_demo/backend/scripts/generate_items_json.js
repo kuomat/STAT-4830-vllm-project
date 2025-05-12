@@ -4,7 +4,7 @@ const csv = require('csvtojson');
 const fs = require('fs');
 const path = require('path');
 
-const CSV_PATH = path.join(__dirname, '../data/embeddings_final.csv');
+const CSV_PATH = path.join(__dirname, '../../../../dataset/embeddings_final.csv');
 const OUT_PATH = path.join(__dirname, '../data/items.json');
 
 csv()

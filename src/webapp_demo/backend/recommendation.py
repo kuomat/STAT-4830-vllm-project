@@ -13,7 +13,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 # 1) Load your CSV
 BASE = os.path.dirname(__file__)
-CSV_PATH = os.path.join(BASE, 'data', 'embeddings_final.csv')
+CSV_PATH = os.path.abspath(os.path.join(BASE, '..', '..', '..', 'dataset', 'embeddings_final.csv'))
 
 ITEM_KEYS = []
 EMB_LIST = []
@@ -94,7 +94,8 @@ def content_filtering_recommend(user_ratings: dict[int, int], k: int = 10) -> li
 
 
 # --- Load and Binarize Ratings Matrix ---
-RATINGS_PATH = os.path.join(BASE, 'data', 'sparse_ratings_matrix.csv')
+# RATINGS_PATH = os.path.join(BASE, 'data', 'sparse_ratings_matrix.csv')
+RATINGS_PATH = os.path.abspath(os.path.join(BASE, '..', '..', '..', 'dataset', 'sparse_ratings_matrix.csv'))
 RELEVANT_ROWS = list(range(0, 1373)) + list(range(5073, 6219))
 
 # Step 1: Load full matrix into list of lists

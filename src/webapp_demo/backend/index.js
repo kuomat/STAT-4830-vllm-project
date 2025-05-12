@@ -19,10 +19,9 @@ app.listen(PORT, () => {
 });
 
 const path = require('path');
-// serve everything in /public/images at /images/*
 app.use(
   '/images',
-  express.static(path.join(__dirname, 'public/images/dataset'))
+  express.static(path.join(__dirname, '..', '..', '..', 'dataset', 'images'))
 );
 
 // … in your routes section …

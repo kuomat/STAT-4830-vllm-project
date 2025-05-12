@@ -12,7 +12,7 @@ class Req(BaseModel):
 
 app = FastAPI()
 BASE = os.path.dirname(__file__)
-METADATA_CSV = os.path.join(BASE, "data", "embeddings_final.csv")
+METADATA_CSV = os.path.join(BASE, "..", "..", "..", "dataset", "embeddings_final.csv")
 
 @app.get("/items")
 async def get_all_items():
