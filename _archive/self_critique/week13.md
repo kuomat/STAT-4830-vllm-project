@@ -1,7 +1,7 @@
 # Week 13 Self-Critique
 
 ## OBSERVE  
-- Read the Week 13 report end-to-end: the narrative is coherent, but some sections feel uneven in depth (e.g., “Technical Approach” is lighter than earlier drafts).  
+- The narrative is coherent, but some sections feel uneven in depth.
 - Re-ran front-to-back benchmarks and unit tests: performance numbers hold up, but no coverage for edge cases like empty selections or missing embeddings.  
 - Initial questions: Where are the offline ranking metrics? How are cold-start users explicitly validated here?
 
