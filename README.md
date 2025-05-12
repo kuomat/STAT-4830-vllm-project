@@ -38,7 +38,7 @@ We implemented and evaluated four distinct recommendation strategies, supported 
 
 # Repository Structure Overview
 
-<pre markdown>```
+```
 ├── _archive/                # Old scripts, early experiments, exploratory notebooks
 │   ├── llm_exploration/     # LLM Logs
 │   ├── notebooks/           # Old scripts for 4 algorithms
@@ -63,7 +63,7 @@ We implemented and evaluated four distinct recommendation strategies, supported 
 ├── report.md                # Final project report
 ├── requirements.txt         # Python dependencies (for evaluation.ipynb)
 └── README.md                # Project summary and setup instructions
-```</pre>
+```
 
 ---
 
@@ -76,51 +76,49 @@ We recommend using **two separate** virtual environments:
 2. **Backend venv** for the webapp_demo (FastAPI service)
 
 ### 1.1 Root venv (for `evaluation.ipynb`)
-    ```
-    # from project root, do not cd yet
-    python3 -m venv .venv-root
-    source .venv-root/bin/activate
-    ```
+```
+# from project root, do not cd yet
+python3 -m venv .venv-root
+source .venv-root/bin/activate
+```
 ### 1.2 Backend venv
 Open a new terminal:
-
-    ```
-    cd src/webapp_demo/backend
-    python3 -m venv .venv-backend
-    source .venv-backend/bin/activate
-    ```
+```
+cd src/webapp_demo/backend
+python3 -m venv .venv-backend
+source .venv-backend/bin/activate
+```
 
 ## 2. Install Python Dependencies
 ### 2.1. In .venv-root (evaluation)
 Go back to the first terminal:
-
-    ```
-    # with .venv-root activated
-    pip install --upgrade pip setuptools wheel
-    pip install -r requirements.txt
-    pip install jupyter
-    ```
+```
+# with .venv-root activated
+pip install --upgrade pip setuptools wheel
+pip install -r requirements.txt
+pip install jupyter
+```
 ### 2.2. In .venv-backend (FastAPI backend)
-    ```
-    # from src/webapp_demo/backend, .venv-backend activated
-    pip install --upgrade pip setuptools wheel
-    pip install numpy pandas scipy scikit-learn torch fastapi uvicorn
-    ```
+```
+# from src/webapp_demo/backend, .venv-backend activated
+pip install --upgrade pip setuptools wheel
+pip install numpy pandas scipy scikit-learn torch fastapi uvicorn
+```
 ---
 
 # Running the Code
 
 ## 1. Run 4 Models + Evaluation (`evaluation.ipynb`)
 ### 1.1 Activate .venv-root
-    ```
-    source .venv-root/bin/activate
-    ```
+```
+source .venv-root/bin/activate
+```
 ### 1.2. Launch Jupyter Lab
-    ```
-    # make sure you are in src folder; venv-root activated
-    cd src
-    jupyter notebook evaluation.ipynb
-    ```
+```
+# make sure you are in src folder; venv-root activated
+cd src
+jupyter notebook evaluation.ipynb
+```
 ### 1.3. Run evaluation.ipynb
 In the notebook, run all cells. You’ll generate:
 - Precision/Recall plots
@@ -137,35 +135,35 @@ The webapp has three moving parts:
 You can start them in any order, but make sure each one is up before you use it.
 
 ### 2.1. Backend: Python (FastAPI)
-    ```
-    # from src/webapp_demo/backend; venv-backend activated
-    source .venv-backend/bin/activate
-    uvicorn recommendation_service:app --reload --port 8000
-    ```
+```
+# from src/webapp_demo/backend; venv-backend activated
+source .venv-backend/bin/activate
+uvicorn recommendation_service:app --reload --port 8000
+```
 You should see:
-    ```
-    INFO: Uvicorn running on http://127.0.0.1:8000
-    ```
+```
+INFO: Uvicorn running on http://127.0.0.1:8000
+```
 
 ### 2.2. Backend: Node (Express)
-    ```
-    # in a new terminal (no Python venv needed here)
-    cd src/webapp_demo/backend
-    npm install
-    npm start
-    ```
+```
+# in a new terminal (no Python venv needed here)
+cd src/webapp_demo/backend
+npm install
+npm start
+```
 You should see:
-    ```
-    Backend listening on http://localhost:4000
-    ```
+```
+Backend listening on http://localhost:4000
+```
 
 #### 3. Frontend: React
-    ```
-    # in another terminal
-    cd src/webapp_demo/frontend
-    npm install
-    npm start
-    ```
+```
+# in another terminal
+cd src/webapp_demo/frontend
+npm install
+npm start
+```
 The app will open at http://localhost:3000/. It uses the proxy in package.json to talk to the Express backend on port 4000.
 
 #### 4. Try it out
