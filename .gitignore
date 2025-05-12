@@ -8,5 +8,30 @@ docs/figures/*
 *.pkl
 *.xlsx
 
-.env
 local/
+
+# ignore all Python venvs anywhere
+**/venv/
+**/.venv/
+**/env/
+**/ENV/
+**/*venv*/
+
+# bytecode
+__pycache__/
+*.py[cod]
+**/*.pyc
+
+# Jupyter
+.ipynb_checkpoints/
+
+# node_modules for frontend & backend
+frontend/node_modules/
+backend/node_modules/
+
+# logs, env files
+*.log
+.env
+
+# OS files
+.DS_Store

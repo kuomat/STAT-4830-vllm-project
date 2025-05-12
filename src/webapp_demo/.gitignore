@@ -22,7 +22,3 @@ dist/
 
 # coverage reports
 coverage/
-
-# lockfiles (if you prefer to ignore them)
-# package-lock.json
-# yarn.lock
