@@ -52,15 +52,16 @@ We implemented and evaluated four distinct recommendation strategies, supported 
 ├── docs/
 │   ├── STAT 4830 Final Presentation.pdf
 │   ├── Final Critique.md
-├── src/                     # Final code scripts and modules for each model
-│   ├── evaluation.ipynb     # Interactive demo and experiment notebooks
+├── notebooks/               # evaluation.ipynb
+│   ├── evaluation.ipynb     # Interactive demo and evaluations with 
+├── src/                     # For the webapp demo
 │   ├── utils/...            # Contains collab filtering & two tower scripts
 ├── webapp_demo/             # Web application demo
 │   ├── backend/...
 │   └── frontend/...
 |   └── .gitignore
 |   └── package-lock.json
-├── report.md                # Final project report
+├── Final Report.pdf         # Final project report
 ├── requirements.txt         # Python dependencies (for evaluation.ipynb)
 └── README.md                # Project summary and setup instructions
 ```
@@ -121,6 +122,7 @@ Go back to the first terminal:
 pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
 pip install jupyter
+python -m ipykernel install --user --name=venv-root --display-name "Python (venv-root)"
 ```
 ### 3.2. In .venv-backend (FastAPI backend)
 ```
@@ -139,16 +141,20 @@ source .venv-root/bin/activate
 ```
 ### 1.2. Launch Jupyter Lab
 ```
-# make sure you are in src folder; venv-root activated
-cd src
+# make sure you are in `notebooks` folder; venv-root activated
+cd notebooks
 jupyter notebook evaluation.ipynb
 ```
 ### 1.3. Run evaluation.ipynb
+**Before running any cells, ensure that you have selected the kernel named "Python (venv-root)" in the top right of the screen!**
+
 In the notebook, run all cells. You’ll generate:
 - Precision/Recall plots
 - RMSE/MSE metrics
 
-Press CTRL-C to quit the Jupyter Kernel. We used Jupyter instead of Google Colab as it allows us to more closely deal with our local environment (needed for our webapp). If desired, the evaluation notebook can also be run in Colab, provided that all the files are uploaded.
+Press CTRL-C in the terminal to quit the Jupyter Kernel. We used Jupyter instead of Google Colab as it allows us to more closely deal with our local environment (needed for our webapp). If desired, the evaluation notebook can also be run in [Colab](https://drive.google.com/drive/folders/1T5zKf19Bsi7bKvqYaohdbtKhF2OS8inl?usp=sharing). You can run `evaluation.ipynb` in from the Google Drive folder linked above, though this may take significantly longer to finish running.
+
+The entire code takes ~2 minutes to run on a local machine, and may take longer on Colab.
 
 ## 2. Run Web App Demo
 ### Prerequisites
